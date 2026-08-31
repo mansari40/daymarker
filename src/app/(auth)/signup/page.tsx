@@ -6,6 +6,7 @@ import Link from "next/link";
 import { signIn } from "next-auth/react";
 import { Check } from "lucide-react";
 import { AuthCard } from "@/components/auth/AuthCard";
+import { ThemeToggle } from "@/components/ui/ThemeToggle";
 
 export default function SignUpPage() {
   const router = useRouter();
@@ -59,9 +60,12 @@ export default function SignUpPage() {
           </div>
           <span className="text-body font-medium text-text-primary">daymark</span>
         </Link>
-        <Link href="/" className="text-small text-text-secondary hover:text-text-primary transition-colors">
-          ← Back
-        </Link>
+        <div className="flex items-center gap-4">
+          <Link href="/" className="text-small text-text-secondary hover:text-text-primary transition-colors">
+            ← Back
+          </Link>
+          <ThemeToggle />
+        </div>
       </div>
 
       {/* Left copy */}

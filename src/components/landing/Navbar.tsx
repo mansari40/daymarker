@@ -1,6 +1,7 @@
 import Link from "next/link";
-import { Sparkles, Check } from "lucide-react";
+import { Check } from "lucide-react";
 import { Button } from "@/components/ui/Button";
+import { ThemeToggle } from "@/components/ui/ThemeToggle";
 
 export function Navbar() {
   return (
@@ -26,6 +27,7 @@ export function Navbar() {
 
         {/* Right side */}
         <div className="flex items-center gap-4">
+          <ThemeToggle />
           <Link href="/signin" className="text-small text-text-secondary hover:text-text-primary transition-colors">
             Sign in
           </Link>

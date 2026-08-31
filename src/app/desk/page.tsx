@@ -10,6 +10,7 @@ import { AddTaskModal } from "@/components/desk/AddTaskModal";
 import { StatsRow } from "@/components/desk/StatsRow";
 import { BottomBanner } from "@/components/desk/BottomBanner";
 import { Tabs } from "@/components/ui/Tabs";
+import { ThemeToggle } from "@/components/ui/ThemeToggle";
 
 interface Task {
   id: string;
@@ -97,12 +98,7 @@ export default function DeskPage() {
           <span className="text-label font-semibold uppercase tracking-widest text-text-tertiary">
             Daymark / Personal desk
           </span>
-          <button className="flex h-8 w-8 items-center justify-center rounded-full border border-border-subtle text-text-tertiary hover:text-text-primary transition-colors cursor-pointer">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <circle cx="12" cy="12" r="4" />
-              <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41" />
-            </svg>
-          </button>
+          <ThemeToggle />
         </div>
 
         {/* Greeting */}
