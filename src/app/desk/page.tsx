@@ -7,6 +7,7 @@ import { Greeting } from "@/components/desk/Greeting";
 import { EmptyState } from "@/components/desk/EmptyState";
 import { TaskList } from "@/components/desk/TaskList";
 import { AddTaskModal } from "@/components/desk/AddTaskModal";
+import { StatsRow } from "@/components/desk/StatsRow";
 import { BottomBanner } from "@/components/desk/BottomBanner";
 import { Tabs } from "@/components/ui/Tabs";
 
@@ -152,6 +153,11 @@ export default function DeskPage() {
               onRefresh={fetchTasks}
             />
           )}
+        </div>
+
+        {/* Stats footer */}
+        <div className="mt-12">
+          <StatsRow />
         </div>
       </div>
 
