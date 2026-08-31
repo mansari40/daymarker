@@ -33,6 +33,11 @@ export default function DeskPage() {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
   const [editingTask, setEditingTask] = useState<Task | null>(null);
+  const [statsRefreshTrigger, setStatsRefreshTrigger] = useState(0);
+
+  const bumpStats = useCallback(() => {
+    setStatsRefreshTrigger((n) => n + 1);
+  }, []);
 
   const fetchTasks = useCallback(async () => {
     try {
@@ -160,13 +165,14 @@ export default function DeskPage() {
               tasks={filteredTasks}
               onEdit={handleEditTask}
               onRefresh={fetchTasks}
+              onMutated={bumpStats}
             />
           )}
         </div>
 
         {/* Stats footer */}
         <div className="mt-12">
-          <StatsRow />
+          <StatsRow refreshTrigger={statsRefreshTrigger} />
         </div>
       </div>
 
@@ -180,7 +186,10 @@ export default function DeskPage() {
           setShowAddModal(false);
           setEditingTask(null);
         }}
-        onCreated={fetchTasks}
+        onCreated={() => {
+          fetchTasks();
+          bumpStats();
+        }}
         editTask={editingTask || undefined}
       />
     </div>

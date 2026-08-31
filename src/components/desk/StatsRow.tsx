@@ -24,7 +24,7 @@ function getStreakCaption(streak: number): string {
   return `${streak} day streak`;
 }
 
-export function StatsRow() {
+export function StatsRow({ refreshTrigger = 0 }: { refreshTrigger?: number }) {
   const [stats, setStats] = useState<Stats | null>(null);
 
   useEffect(() => {
@@ -32,7 +32,7 @@ export function StatsRow() {
       .then((res) => res.json())
       .then(setStats)
       .catch(() => {});
-  }, []);
+  }, [refreshTrigger]);
 
   if (!stats) {
     return (

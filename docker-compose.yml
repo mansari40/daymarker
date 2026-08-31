@@ -9,7 +9,7 @@ services:
     volumes:
       - db_data:/var/lib/postgresql/data
     ports:
-      - "5432:5432"
+      - "5435:5432"
 
   app:
     build: .
@@ -20,6 +20,7 @@ services:
       DATABASE_URL: postgresql://daymark:daymark@db:5432/daymark
       NEXTAUTH_SECRET: change-me-in-prod
       NEXTAUTH_URL: http://localhost:3000
+      AUTH_TRUST_HOST: "true"
     ports:
       - "3000:3000"
     command: sh -c "npx prisma migrate deploy && npm run start"

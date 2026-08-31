@@ -19,9 +19,10 @@ interface TaskListProps {
   tasks: Task[];
   onEdit: (task: Task) => void;
   onRefresh: () => void;
+  onMutated: () => void;
 }
 
-export function TaskList({ tasks, onEdit, onRefresh }: TaskListProps) {
+export function TaskList({ tasks, onEdit, onRefresh, onMutated }: TaskListProps) {
   return (
     <div className="flex flex-col gap-3">
       {tasks.map((task) => (
@@ -30,6 +31,7 @@ export function TaskList({ tasks, onEdit, onRefresh }: TaskListProps) {
           task={task}
           onEdit={() => onEdit(task)}
           onRefresh={onRefresh}
+          onMutated={onMutated}
         />
       ))}
     </div>

@@ -50,10 +50,12 @@ export function TaskItem({
   task,
   onEdit,
   onRefresh,
+  onMutated,
 }: {
   task: Task;
   onEdit: () => void;
   onRefresh: () => void;
+  onMutated: () => void;
 }) {
   const [showMenu, setShowMenu] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -67,6 +69,7 @@ export function TaskItem({
         body: JSON.stringify({ completed: !task.completed }),
       });
       onRefresh();
+      onMutated();
     } finally {
       setLoading(false);
     }
@@ -77,6 +80,7 @@ export function TaskItem({
     try {
       await fetch(`/api/tasks/${task.id}`, { method: "DELETE" });
       onRefresh();
+      onMutated();
     } finally {
       setLoading(false);
       setShowMenu(false);
@@ -92,6 +96,7 @@ export function TaskItem({
         body: JSON.stringify({ archived: true }),
       });
       onRefresh();
+      onMutated();
     } finally {
       setLoading(false);
       setShowMenu(false);
