@@ -1,0 +1,147 @@
+@import "tailwindcss";
+
+@theme inline {
+  /* backgrounds */
+  --color-bg-base: #0a1310;
+  --color-bg-panel: #0e1a16;
+  --color-bg-panel-hover: #142620;
+  --color-bg-input: #0c1815;
+
+  /* borders */
+  --color-border-subtle: rgba(255, 255, 255, 0.08);
+  --color-border-strong: rgba(255, 255, 255, 0.14);
+  --color-border-accent: #34d399;
+
+  /* text */
+  --color-text-primary: #f4f5f1;
+  --color-text-secondary: #9aa79f;
+  --color-text-tertiary: #6b7871;
+
+  /* accent green (brand) */
+  --color-accent-500: #22c55e;
+  --color-accent-400: #4ade80;
+  --color-accent-300: #86efac;
+  --color-accent-muted: rgba(74, 222, 128, 0.12);
+
+  /* buttons */
+  --color-btn-primary-bg: #f4f5f1;
+  --color-btn-primary-text: #0a1310;
+  --color-btn-secondary-bg: transparent;
+  --color-btn-secondary-border: rgba(255, 255, 255, 0.14);
+
+  /* semantic */
+  --color-success: #34d399;
+
+  /* radii */
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+  --radius-pill: 999px;
+
+  /* type scale */
+  --font-display: var(--font-geist-sans);
+  --font-sans: var(--font-geist-sans);
+
+  --text-display: 56px;
+  --text-h1: 36px;
+  --text-h2: 24px;
+  --text-body: 16px;
+  --text-small: 14px;
+  --text-label: 11px;
+
+  /* custom spacing for sections */
+  --spacing-section: 96px;
+}
+
+/* CSS variables for theme (used by JS + CSS) */
+:root {
+  --bg-base: #0a1310;
+  --bg-panel: #0e1a16;
+  --bg-panel-hover: #142620;
+  --bg-input: #0c1815;
+  --border-subtle: rgba(255, 255, 255, 0.08);
+  --border-strong: rgba(255, 255, 255, 0.14);
+  --border-accent: #34d399;
+  --text-primary: #f4f5f1;
+  --text-secondary: #9aa79f;
+  --text-tertiary: #6b7871;
+  --accent-500: #22c55e;
+  --accent-400: #4ade80;
+  --accent-300: #86efac;
+  --accent-muted: rgba(74, 222, 128, 0.12);
+  --btn-primary-bg: #f4f5f1;
+  --btn-primary-text: #0a1310;
+  --btn-secondary-bg: transparent;
+  --btn-secondary-border: var(--border-strong);
+  --success: #34d399;
+}
+
+[data-theme="light"],
+.light {
+  --bg-base: #f6f7f2;
+  --bg-panel: #ffffff;
+  --bg-panel-hover: #f0f1ec;
+  --bg-input: #f0f1ec;
+  --border-subtle: rgba(0, 0, 0, 0.08);
+  --border-strong: rgba(0, 0, 0, 0.14);
+  --border-accent: #22c55e;
+  --text-primary: #0a1310;
+  --text-secondary: #4a5a50;
+  --text-tertiary: #8a9a90;
+  --accent-500: #22c55e;
+  --accent-400: #16a34a;
+  --accent-300: #22c55e;
+  --accent-muted: rgba(34, 197, 94, 0.10);
+  --btn-primary-bg: #0a1310;
+  --btn-primary-text: #f6f7f2;
+  --btn-secondary-bg: transparent;
+  --btn-secondary-border: rgba(0, 0, 0, 0.14);
+  --success: #22c55e;
+}
+
+[data-theme="light"] {
+  --color-bg-base: #f6f7f2;
+  --color-bg-panel: #ffffff;
+  --color-bg-panel-hover: #f0f1ec;
+  --color-bg-input: #f0f1ec;
+  --color-border-subtle: rgba(0, 0, 0, 0.08);
+  --color-border-strong: rgba(0, 0, 0, 0.14);
+  --color-border-accent: #22c55e;
+  --color-text-primary: #0a1310;
+  --color-text-secondary: #4a5a50;
+  --color-text-tertiary: #8a9a90;
+  --color-accent-500: #22c55e;
+  --color-accent-400: #16a34a;
+  --color-accent-300: #22c55e;
+  --color-accent-muted: rgba(34, 197, 94, 0.10);
+  --color-btn-primary-bg: #0a1310;
+  --color-btn-primary-text: #f6f7f2;
+  --color-btn-secondary-bg: transparent;
+  --color-btn-secondary-border: rgba(0, 0, 0, 0.14);
+  --color-success: #22c55e;
+}
+
+/* Global styles */
+body {
+  background: var(--bg-base);
+  color: var(--text-primary);
+  font-family: var(--font-geist-sans), system-ui, sans-serif;
+}
+
+/* Selection color */
+::selection {
+  background: var(--accent-muted);
+  color: var(--text-primary);
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg-base);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border-strong);
+  border-radius: 3px;
+}
