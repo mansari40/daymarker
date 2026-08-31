@@ -1,27 +1,92 @@
 "use client";
 
-import { useState, useCallback } from "react";
-import { Check, Search, ArrowUpDown } from "lucide-react";
+import { useState, useCallback, useEffect } from "react";
+import { Search, ArrowUpDown } from "lucide-react";
+import { useSession } from "next-auth/react";
 import { Greeting } from "@/components/desk/Greeting";
 import { EmptyState } from "@/components/desk/EmptyState";
+import { TaskList } from "@/components/desk/TaskList";
+import { AddTaskModal } from "@/components/desk/AddTaskModal";
 import { BottomBanner } from "@/components/desk/BottomBanner";
 import { Tabs } from "@/components/ui/Tabs";
 
-const tabs = [
-  { id: "today", label: "Today", count: 0 },
-  { id: "upcoming", label: "Upcoming" },
-  { id: "completed", label: "Completed" },
-  { id: "archive", label: "Archive" },
-];
+interface Task {
+  id: string;
+  title: string;
+  category: string;
+  weight: string;
+  timeOfDay: string;
+  dueDate: string | null;
+  completed: boolean;
+  completedAt: string | null;
+  archived: boolean;
+  createdAt: string;
+}
 
 export default function DeskPage() {
+  const { data: session, status } = useSession();
   const [activeTab, setActiveTab] = useState("today");
   const [showAddModal, setShowAddModal] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [tasks, setTasks] = useState<Task[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [editingTask, setEditingTask] = useState<Task | null>(null);
+
+  const fetchTasks = useCallback(async () => {
+    try {
+      const res = await fetch(`/api/tasks?status=${activeTab}`);
+      if (res.ok) {
+        const data = await res.json();
+        setTasks(data);
+      }
+    } catch {
+      // silently fail
+    } finally {
+      setLoading(false);
+    }
+  }, [activeTab]);
+
+  useEffect(() => {
+    if (status === "authenticated") {
+      fetchTasks();
+    }
+  }, [status, fetchTasks]);
+
+  const handleTabChange = (tab: string) => {
+    setActiveTab(tab);
+    setLoading(true);
+  };
 
   const handleAddTask = useCallback(() => {
+    setEditingTask(null);
     setShowAddModal(true);
   }, []);
+
+  const handleEditTask = useCallback((task: Task) => {
+    setEditingTask(task);
+    setShowAddModal(true);
+  }, []);
+
+  const filteredTasks = tasks.filter((t) =>
+    searchQuery ? t.title.toLowerCase().includes(searchQuery.toLowerCase()) : true
+  );
+
+  const todayCount = tasks.length;
+
+  const tabs = [
+    { id: "today", label: "Today", count: todayCount || undefined },
+    { id: "upcoming", label: "Upcoming" },
+    { id: "completed", label: "Completed" },
+    { id: "archive", label: "Archive" },
+  ];
+
+  if (status === "loading" || !session) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-bg-base">
+        <p className="text-text-secondary">Loading...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-bg-base">
@@ -71,17 +136,38 @@ export default function DeskPage() {
 
         {/* Tabs */}
         <div className="mt-6">
-          <Tabs tabs={tabs} activeTab={activeTab} onChange={setActiveTab} />
+          <Tabs tabs={tabs} activeTab={activeTab} onChange={handleTabChange} />
         </div>
 
         {/* Content area */}
         <div className="mt-6">
-          <EmptyState onAddTask={handleAddTask} />
+          {loading ? (
+            <p className="py-12 text-center text-text-tertiary">Loading tasks...</p>
+          ) : filteredTasks.length === 0 ? (
+            <EmptyState onAddTask={handleAddTask} />
+          ) : (
+            <TaskList
+              tasks={filteredTasks}
+              onEdit={handleEditTask}
+              onRefresh={fetchTasks}
+            />
+          )}
         </div>
       </div>
 
       {/* Bottom banner */}
       <BottomBanner />
+
+      {/* Add/Edit Task Modal */}
+      <AddTaskModal
+        open={showAddModal}
+        onClose={() => {
+          setShowAddModal(false);
+          setEditingTask(null);
+        }}
+        onCreated={fetchTasks}
+        editTask={editingTask || undefined}
+      />
     </div>
   );
 }
