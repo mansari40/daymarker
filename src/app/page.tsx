@@ -1,9 +1,21 @@
+import { Navbar } from "@/components/landing/Navbar";
+import { Hero } from "@/components/landing/Hero";
+import { RitualSection } from "@/components/landing/RitualSection";
+import { FeaturesSection } from "@/components/landing/FeaturesSection";
+import { ClosingCTA } from "@/components/landing/ClosingCTA";
+import { Footer } from "@/components/landing/Footer";
+
 export default function Home() {
   return (
-    <main className="flex min-h-screen items-center justify-center">
-      <h1 className="text-display font-bold tracking-tight text-text-primary">
-        daymark
-      </h1>
-    </main>
+    <div className="min-h-screen bg-bg-base">
+      <Navbar />
+      <main>
+        <Hero />
+        <RitualSection />
+        <FeaturesSection />
+        <ClosingCTA />
+      </main>
+      <Footer />
+    </div>
   );
 }
