@@ -1,5 +1,8 @@
-import { auth } from "@/lib/auth";
+import NextAuth from "next-auth";
 import { NextResponse } from "next/server";
+import { authConfig } from "@/lib/auth.config";
+
+const { auth } = NextAuth(authConfig);
 
 export default auth((req) => {
   const isLoggedIn = !!req.auth;
@@ -10,7 +13,6 @@ export default auth((req) => {
     return NextResponse.redirect(new URL("/signin", req.nextUrl.origin));
   }
 
-  // Protect task/stats API routes
   if (
     isApiRoute &&
     !req.nextUrl.pathname.startsWith("/api/auth") &&
