@@ -1,8 +1,8 @@
 "use client";
 
 import { useState, useCallback, useEffect } from "react";
-import { Search, ArrowUpDown } from "lucide-react";
-import { useSession } from "next-auth/react";
+import { Search, ArrowUpDown, LogOut } from "lucide-react";
+import { useSession, signOut } from "next-auth/react";
 import { Greeting } from "@/components/desk/Greeting";
 import { EmptyState } from "@/components/desk/EmptyState";
 import { TaskList } from "@/components/desk/TaskList";
@@ -116,7 +116,20 @@ export default function DeskPage() {
           <span className="text-label font-semibold uppercase tracking-widest text-text-tertiary">
             Daymark / Personal desk
           </span>
-          <ThemeToggle />
+          <div className="flex items-center gap-2">
+            <ThemeToggle />
+            <button
+              onClick={() => {
+                if (confirm("Sign out of Daymark?")) {
+                  signOut({ callbackUrl: "/" });
+                }
+              }}
+              className="flex h-8 w-8 items-center justify-center rounded-full border border-border-subtle text-text-tertiary hover:text-text-primary transition-colors cursor-pointer"
+              aria-label="Sign out"
+            >
+              <LogOut size={16} />
+            </button>
+          </div>
         </div>
 
         {/* Greeting */}
