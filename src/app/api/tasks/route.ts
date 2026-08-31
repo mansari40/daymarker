@@ -49,7 +49,7 @@ export async function GET(req: Request) {
   const todayEnd = new Date(todayStart);
   todayEnd.setDate(todayEnd.getDate() + 1);
 
-  let where: Record<string, unknown> = {
+  const where: Record<string, unknown> = {
     userId: session.user.id,
     archived: false,
   };

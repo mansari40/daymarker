@@ -3,38 +3,24 @@
 import { useEffect, useState } from "react";
 import { Sun, Moon } from "lucide-react";
 
+function getInitialTheme(): "dark" | "light" {
+  if (typeof window === "undefined") return "dark";
+  const stored = localStorage.getItem("daymark-theme");
+  if (stored === "dark" || stored === "light") return stored;
+  return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+}
+
 export function ThemeToggle({ className = "" }: { className?: string }) {
-  const [theme, setTheme] = useState<"dark" | "light">("dark");
-  const [mounted, setMounted] = useState(false);
+  const [theme, setTheme] = useState<"dark" | "light">(getInitialTheme);
 
   useEffect(() => {
-    setMounted(true);
-    const stored = localStorage.getItem("daymark-theme") as "dark" | "light" | null;
-    if (stored) {
-      setTheme(stored);
-      document.documentElement.setAttribute("data-theme", stored);
-    } else {
-      const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-      const initial = prefersDark ? "dark" : "light";
-      setTheme(initial);
-      document.documentElement.setAttribute("data-theme", initial);
-    }
-  }, []);
+    document.documentElement.setAttribute("data-theme", theme);
+    localStorage.setItem("daymark-theme", theme);
+  }, [theme]);
 
   const toggle = () => {
-    const next = theme === "dark" ? "light" : "dark";
-    setTheme(next);
-    localStorage.setItem("daymark-theme", next);
-    document.documentElement.setAttribute("data-theme", next);
+    setTheme((prev) => (prev === "dark" ? "light" : "dark"));
   };
-
-  if (!mounted) {
-    return (
-      <button className={`flex h-8 w-8 items-center justify-center rounded-full border border-border-subtle text-text-tertiary cursor-pointer ${className}`} disabled>
-        <Moon size={16} />
-      </button>
-    );
-  }
 
   return (
     <button

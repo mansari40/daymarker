@@ -1,7 +1,7 @@
 "use client";
 
 import { useSession } from "next-auth/react";
-import { Calendar, Moon } from "lucide-react";
+import { Calendar } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 
 export function Greeting({ onAddTask }: { onAddTask: () => void }) {

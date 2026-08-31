@@ -50,9 +50,22 @@ export default function DeskPage() {
 
   useEffect(() => {
     if (status === "authenticated") {
-      fetchTasks();
+      const doFetch = async () => {
+        try {
+          const res = await fetch(`/api/tasks?status=${activeTab}`);
+          if (res.ok) {
+            const data = await res.json();
+            setTasks(data);
+          }
+        } catch {
+          // silently fail
+        } finally {
+          setLoading(false);
+        }
+      };
+      void doFetch();
     }
-  }, [status, fetchTasks]);
+  }, [status, activeTab]);
 
   const handleTabChange = (tab: string) => {
     setActiveTab(tab);

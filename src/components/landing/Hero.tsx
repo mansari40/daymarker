@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Check, Circle } from "lucide-react";
+import { Check } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 
 export function Hero() {

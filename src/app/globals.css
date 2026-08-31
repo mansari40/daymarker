@@ -42,12 +42,16 @@
   --font-display: var(--font-geist-sans);
   --font-sans: var(--font-geist-sans);
 
-  --text-display: 56px;
-  --text-h1: 36px;
-  --text-h2: 24px;
-  --text-body: 16px;
-  --text-small: 14px;
-  --text-label: 11px;
+  --text-display: 56px / 1.05;
+  --text-h1: 36px / 1.1;
+  --text-h2: 24px / 1.2;
+  --text-body: 16px / 1.6;
+  --text-small: 14px / 1.5;
+  --text-label: 11px / 1.4;
+
+  /* custom tracking */
+  --tracking-tighter: -0.02em;
+  --tracking-label: 0.08em;
 
   /* custom spacing for sections */
   --spacing-section: 96px;
