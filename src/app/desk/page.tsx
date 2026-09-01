@@ -26,7 +26,7 @@ interface Task {
   completedAt: string | null;
   archived: boolean;
   createdAt: string;
-  order?: number;
+  sortOrder?: number;
 }
 
 export default function DeskPage() {
@@ -139,15 +139,15 @@ export default function DeskPage() {
   }, []);
 
   const handleReorder = useCallback(
-    async (items: { id: string; order: number }[]) => {
+    async (items: { id: string; sortOrder: number }[]) => {
       // Optimistic update
       setTasks((prev) => {
         const updated = [...prev];
         for (const item of items) {
           const task = updated.find((t) => t.id === item.id);
-          if (task) task.order = item.order;
+          if (task) task.sortOrder = item.sortOrder;
         }
-        return updated.sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+        return updated.sort((a, b) => (a.sortOrder ?? 0) - (b.sortOrder ?? 0));
       });
 
       try {

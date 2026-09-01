@@ -15,10 +15,10 @@ export async function PATCH(req: Request) {
       return NextResponse.json({ error: "items array required" }, { status: 400 });
     }
 
-    const updates = items.map((item: { id: string; order: number }) =>
+    const updates = items.map((item: { id: string; sortOrder: number }) =>
       prisma.task.updateMany({
         where: { id: item.id, userId: session.user!.id! },
-        data: { order: item.order },
+        data: { sortOrder: item.sortOrder },
       })
     );
 

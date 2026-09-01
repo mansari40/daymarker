@@ -29,7 +29,7 @@ interface Task {
   completedAt: string | null;
   archived: boolean;
   createdAt: string;
-  order?: number;
+  sortOrder?: number;
 }
 
 interface TaskListProps {
@@ -38,7 +38,7 @@ interface TaskListProps {
   onRefresh: () => void;
   onMutated: () => void;
   onDetail: (task: Task) => void;
-  onReorder?: (items: { id: string; order: number }[]) => void;
+  onReorder?: (items: { id: string; sortOrder: number }[]) => void;
   groupByTimeOfDay?: boolean;
   draggable?: boolean;
 }
@@ -80,7 +80,7 @@ export function TaskList({
     reordered.splice(newIndex, 0, moved);
 
     onReorder(
-      reordered.map((t, i) => ({ id: t.id, order: i }))
+      reordered.map((t, i) => ({ id: t.id, sortOrder: i }))
     );
   };
 
