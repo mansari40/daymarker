@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import { Search, ArrowUpDown, LogOut } from "lucide-react";
 import { useSession, signOut } from "next-auth/react";
 import { Greeting } from "@/components/desk/Greeting";
@@ -9,6 +9,9 @@ import { TaskList } from "@/components/desk/TaskList";
 import { AddTaskModal } from "@/components/desk/AddTaskModal";
 import { StatsRow } from "@/components/desk/StatsRow";
 import { BottomBanner } from "@/components/desk/BottomBanner";
+import { MilestoneToast } from "@/components/desk/MilestoneToast";
+import { TaskDetail } from "@/components/desk/TaskDetail";
+import { SkeletonTask, SkeletonGreeting, SkeletonStats } from "@/components/desk/SkeletonTask";
 import { Tabs } from "@/components/ui/Tabs";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
 
@@ -23,6 +26,7 @@ interface Task {
   completedAt: string | null;
   archived: boolean;
   createdAt: string;
+  order?: number;
 }
 
 export default function DeskPage() {
@@ -34,6 +38,9 @@ export default function DeskPage() {
   const [loading, setLoading] = useState(true);
   const [editingTask, setEditingTask] = useState<Task | null>(null);
   const [statsRefreshTrigger, setStatsRefreshTrigger] = useState(0);
+  const [streak, setStreak] = useState(0);
+  const [detailTask, setDetailTask] = useState<Task | null>(null);
+  const searchRef = useRef<HTMLInputElement>(null);
 
   const bumpStats = useCallback(() => {
     setStatsRefreshTrigger((n) => n + 1);
@@ -72,6 +79,46 @@ export default function DeskPage() {
     }
   }, [status, activeTab]);
 
+  useEffect(() => {
+    fetch("/api/stats")
+      .then((res) => res.json())
+      .then((data) => {
+        if (data?.streak !== undefined) setStreak(data.streak);
+      })
+      .catch(() => {});
+  }, [statsRefreshTrigger]);
+
+  // Keyboard shortcuts
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const tag = (e.target as HTMLElement).tagName;
+      const isInput = tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT";
+
+      if (e.key === "n" && !isInput && !e.metaKey && !e.ctrlKey) {
+        e.preventDefault();
+        setEditingTask(null);
+        setShowAddModal(true);
+      }
+
+      if (e.key === "/" && !isInput && !e.metaKey && !e.ctrlKey) {
+        e.preventDefault();
+        searchRef.current?.focus();
+      }
+
+      if (e.key === "Escape") {
+        if (detailTask) {
+          setDetailTask(null);
+        } else if (showAddModal) {
+          setShowAddModal(false);
+          setEditingTask(null);
+        }
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [detailTask, showAddModal]);
+
   const handleTabChange = (tab: string) => {
     setActiveTab(tab);
     setLoading(true);
@@ -86,6 +133,35 @@ export default function DeskPage() {
     setEditingTask(task);
     setShowAddModal(true);
   }, []);
+
+  const handleDetail = useCallback((task: Task) => {
+    setDetailTask(task);
+  }, []);
+
+  const handleReorder = useCallback(
+    async (items: { id: string; order: number }[]) => {
+      // Optimistic update
+      setTasks((prev) => {
+        const updated = [...prev];
+        for (const item of items) {
+          const task = updated.find((t) => t.id === item.id);
+          if (task) task.order = item.order;
+        }
+        return updated.sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+      });
+
+      try {
+        await fetch("/api/tasks/reorder", {
+          method: "PATCH",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ items }),
+        });
+      } catch {
+        fetchTasks();
+      }
+    },
+    [fetchTasks]
+  );
 
   const filteredTasks = tasks.filter((t) =>
     searchQuery ? t.title.toLowerCase().includes(searchQuery.toLowerCase()) : true
@@ -110,6 +186,8 @@ export default function DeskPage() {
 
   return (
     <div className="min-h-screen bg-bg-base">
+      <MilestoneToast streak={streak} />
+
       <div className="mx-auto max-w-4xl px-6 py-8">
         {/* Top meta row */}
         <div className="mb-8 flex items-center justify-between">
@@ -133,7 +211,7 @@ export default function DeskPage() {
         </div>
 
         {/* Greeting */}
-        <Greeting onAddTask={handleAddTask} />
+        {loading ? <SkeletonGreeting /> : <Greeting onAddTask={handleAddTask} />}
 
         {/* List panel header */}
         <div className="mt-12 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -149,8 +227,9 @@ export default function DeskPage() {
             <div className="relative">
               <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-text-tertiary" />
               <input
+                ref={searchRef}
                 type="text"
-                placeholder="Find a task"
+                placeholder="Find a task (press /)"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="h-9 w-48 rounded-[--radius-md] bg-bg-input pl-9 pr-3 text-small text-text-primary border border-border-subtle placeholder:text-text-tertiary focus:outline-none focus:border-border-accent focus:ring-1 focus:ring-border-accent transition-colors"
@@ -170,7 +249,11 @@ export default function DeskPage() {
         {/* Content area */}
         <div className="mt-6">
           {loading ? (
-            <p className="py-12 text-center text-text-tertiary">Loading tasks...</p>
+            <div className="flex flex-col gap-3">
+              {[1, 2, 3, 4].map((i) => (
+                <SkeletonTask key={i} />
+              ))}
+            </div>
           ) : filteredTasks.length === 0 ? (
             <EmptyState onAddTask={handleAddTask} tab={activeTab} />
           ) : (
@@ -179,6 +262,10 @@ export default function DeskPage() {
               onEdit={handleEditTask}
               onRefresh={fetchTasks}
               onMutated={bumpStats}
+              onDetail={handleDetail}
+              onReorder={handleReorder}
+              groupByTimeOfDay={activeTab === "today"}
+              draggable={activeTab === "today" || activeTab === "upcoming"}
             />
           )}
         </div>
@@ -205,6 +292,21 @@ export default function DeskPage() {
         }}
         editTask={editingTask || undefined}
       />
+
+      {/* Task Detail Slide-Out */}
+      {detailTask && (
+        <TaskDetail
+          task={detailTask}
+          onClose={() => setDetailTask(null)}
+          onEdit={() => {
+            setEditingTask(detailTask);
+            setShowAddModal(true);
+            setDetailTask(null);
+          }}
+          onRefresh={fetchTasks}
+          onMutated={bumpStats}
+        />
+      )}
     </div>
   );
 }

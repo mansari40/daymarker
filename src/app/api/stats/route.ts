@@ -35,10 +35,16 @@ export async function GET() {
   // Streak + week
   const { streak, week } = await computeStreak(userId);
 
+  // Map JS day-of-week to week array index (Tu=0, We=1, Th=2, Fr=3, Sa=4, Su=5, Mo=6)
+  const dayOfWeek = now.getDay();
+  const weekIndexMap = [5, 6, 0, 1, 2, 3, 4]; // Sun=5, Mon=6, Tue=0, Wed=1, Thu=2, Fri=3, Sat=4
+  const currentDay = weekIndexMap[dayOfWeek];
+
   return NextResponse.json({
     todayDone,
     todayTotal,
     streak,
     week,
+    currentDay,
   });
 }

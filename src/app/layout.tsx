@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist } from "next/font/google";
 import { SessionProvider } from "@/components/SessionProvider";
+import { PageTransition } from "@/components/PageTransition";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -36,7 +37,9 @@ export default function RootLayout({
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
       </head>
       <body className="min-h-screen bg-bg-base text-text-primary">
-        <SessionProvider>{children}</SessionProvider>
+        <SessionProvider>
+          <PageTransition>{children}</PageTransition>
+        </SessionProvider>
       </body>
     </html>
   );

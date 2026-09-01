@@ -1,5 +1,6 @@
 import { Flag, Clock, Sparkles } from "lucide-react";
 import { Reveal } from "@/components/ui/Reveal";
+import { CountUp } from "@/components/ui/CountUp";
 
 const features = [
   {
@@ -20,6 +21,12 @@ const features = [
     title: "Streak-driven",
     description: "Watch your consistency build. Small marks add up.",
   },
+];
+
+const stats = [
+  { value: 12400, suffix: "+", label: "Intentions set" },
+  { value: 14, suffix: " day", label: "Avg streak" },
+  { value: 1, suffix: "", label: "Task per day" },
 ];
 
 export function FeaturesSection() {
@@ -60,6 +67,20 @@ export function FeaturesSection() {
                 <div className="border-t border-border-subtle" />
                 <h3 className="text-body font-bold text-text-primary">{feature.title}</h3>
                 <p className="text-small text-text-secondary">{feature.description}</p>
+              </div>
+            </Reveal>
+          ))}
+        </div>
+
+        {/* Stats counters */}
+        <div className="mt-20 grid grid-cols-1 gap-8 border-t border-border-subtle pt-12 sm:grid-cols-3">
+          {stats.map((stat, i) => (
+            <Reveal key={stat.label} delay={0.1 + i * 0.12}>
+              <div className="text-center">
+                <p className="text-display font-bold tracking-tight text-text-primary">
+                  <CountUp target={stat.value} suffix={stat.suffix} />
+                </p>
+                <p className="mt-2 text-small text-text-tertiary">{stat.label}</p>
               </div>
             </Reveal>
           ))}

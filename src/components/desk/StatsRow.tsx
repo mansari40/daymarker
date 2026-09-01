@@ -10,6 +10,7 @@ interface Stats {
   todayTotal: number;
   streak: number;
   week: { day: string; done: number }[];
+  currentDay: number;
 }
 
 function getCaption(done: number, total: number): string {
@@ -21,7 +22,9 @@ function getCaption(done: number, total: number): string {
 
 function getStreakCaption(streak: number): string {
   if (streak === 0) return "Your week starts here";
-  return `${streak} day streak`;
+  if (streak < 7) return `${streak} day streak — keep building.`;
+  if (streak < 30) return `${streak} days. This is a real habit.`;
+  return `${streak} days. Quiet discipline.`;
 }
 
 export function StatsRow({ refreshTrigger = 0 }: { refreshTrigger?: number }) {
@@ -83,8 +86,8 @@ export function StatsRow({ refreshTrigger = 0 }: { refreshTrigger?: number }) {
           </span>
           <Activity size={14} className="text-text-tertiary" />
         </div>
-        <div className="mt-4 flex-1">
-          <WeekChart week={stats.week} />
+        <div className="mt-4 flex-1 flex items-center justify-center">
+          <WeekChart week={stats.week} currentDay={stats.currentDay} />
         </div>
         <div className="mt-3 border-t border-border-subtle pt-3">
           <div className="flex items-center gap-2 text-small text-text-secondary">

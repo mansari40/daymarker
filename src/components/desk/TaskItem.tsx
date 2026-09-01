@@ -1,7 +1,9 @@
 "use client";
 
-import { useState } from "react";
-import { Check, MoreHorizontal, Pencil, Trash2, Archive } from "lucide-react";
+import { useState, useCallback, useRef } from "react";
+import { Check, MoreHorizontal, Pencil, Trash2, Archive, GripVertical } from "lucide-react";
+import { useSortable } from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 
 interface Task {
   id: string;
@@ -46,36 +48,98 @@ function formatDate(dateStr: string | null) {
   });
 }
 
+function ConfettiParticle({ index }: { index: number }) {
+  const angle = (index / 8) * 360;
+  const distance = 20 + Math.random() * 16;
+  const tx = Math.cos((angle * Math.PI) / 180) * distance;
+  const ty = Math.sin((angle * Math.PI) / 180) * distance;
+  const colors = ["#22c55e", "#4ade80", "#86efac", "#f4f5f1", "#34d399"];
+  const color = colors[index % colors.length];
+  const size = 3 + Math.random() * 3;
+
+  return (
+    <span
+      className="absolute rounded-full"
+      style={{
+        width: size,
+        height: size,
+        backgroundColor: color,
+        top: "50%",
+        left: "50%",
+        marginTop: -size / 2,
+        marginLeft: -size / 2,
+        ["--tx" as string]: `${tx}px`,
+        ["--ty" as string]: `${ty}px`,
+        animation: "confetti-burst 0.6s ease-out forwards",
+        animationDelay: `${index * 15}ms`,
+      }}
+    />
+  );
+}
+
 export function TaskItem({
   task,
   onEdit,
   onRefresh,
   onMutated,
+  onDetail,
+  draggable = false,
 }: {
   task: Task;
   onEdit: () => void;
   onRefresh: () => void;
   onMutated: () => void;
+  onDetail: (task: Task) => void;
+  draggable?: boolean;
 }) {
   const [showMenu, setShowMenu] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [justCompleted, setJustCompleted] = useState(false);
+  const [showConfetti, setShowConfetti] = useState(false);
+  const checkboxRef = useRef<HTMLButtonElement>(null);
 
-  const handleToggleComplete = async () => {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: task.id, disabled: !draggable });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+  };
+
+  const handleToggleComplete = useCallback(async () => {
     setLoading(true);
+    const wasCompleted = task.completed;
+
+    if (!wasCompleted) {
+      setShowConfetti(true);
+      setJustCompleted(true);
+      setTimeout(() => setShowConfetti(false), 700);
+      setTimeout(() => setJustCompleted(false), 1200);
+    } else {
+      setJustCompleted(false);
+    }
+
     try {
       await fetch(`/api/tasks/${task.id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ completed: !task.completed }),
+        body: JSON.stringify({ completed: !wasCompleted }),
       });
       onRefresh();
       onMutated();
     } finally {
       setLoading(false);
     }
-  };
+  }, [task.id, task.completed, onRefresh, onMutated]);
 
-  const handleDelete = async () => {
+  const handleDelete = useCallback(async () => {
     setLoading(true);
     try {
       await fetch(`/api/tasks/${task.id}`, { method: "DELETE" });
@@ -85,9 +149,9 @@ export function TaskItem({
       setLoading(false);
       setShowMenu(false);
     }
-  };
+  }, [task.id, onRefresh, onMutated]);
 
-  const handleArchive = async () => {
+  const handleArchive = useCallback(async () => {
     setLoading(true);
     try {
       await fetch(`/api/tasks/${task.id}`, {
@@ -101,41 +165,99 @@ export function TaskItem({
       setLoading(false);
       setShowMenu(false);
     }
-  };
+  }, [task.id, onRefresh, onMutated]);
+
+  const showStrikethrough = task.completed || justCompleted;
 
   return (
     <div
-      className={`panel-elevated group relative flex items-start gap-4 rounded-[--radius-lg] bg-bg-panel border border-border-subtle p-4 hover:bg-bg-panel-hover ${
+      ref={setNodeRef}
+      style={style}
+      className={`group relative flex items-start gap-3 rounded-[--radius-lg] bg-bg-panel border border-border-subtle p-4 transition-colors ${
         task.completed ? "opacity-60" : ""
-      }`}
+      } ${isDragging ? "z-50 shadow-lg" : ""}`}
     >
+      {/* Drag handle */}
+      {draggable && (
+        <button
+          {...attributes}
+          {...listeners}
+          className="mt-0.5 flex h-5 w-5 flex-shrink-0 items-center justify-center text-text-tertiary hover:text-text-secondary cursor-grab active:cursor-grabbing opacity-0 group-hover:opacity-100 transition-opacity"
+        >
+          <GripVertical size={14} />
+        </button>
+      )}
+
       {/* Checkbox */}
-      <button
-        onClick={handleToggleComplete}
-        disabled={loading}
-        className="mt-0.5 flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full border transition-colors cursor-pointer"
-        style={{
-          borderColor: task.completed
-            ? "var(--accent-500)"
-            : "var(--border-strong)",
-          backgroundColor: task.completed
-            ? "var(--accent-500)"
-            : "transparent",
-        }}
-      >
-        {task.completed && <Check size={12} className="text-white" strokeWidth={3} />}
-      </button>
+      <div className="relative mt-0.5 flex-shrink-0">
+        <button
+          ref={checkboxRef}
+          onClick={handleToggleComplete}
+          disabled={loading}
+          className="flex h-5 w-5 items-center justify-center rounded-full border transition-all duration-300 cursor-pointer"
+          style={{
+            borderColor: task.completed
+              ? "var(--accent-500)"
+              : "var(--border-strong)",
+            backgroundColor: task.completed
+              ? "var(--accent-500)"
+              : "transparent",
+          }}
+        >
+          {task.completed && (
+            <svg
+              width="12"
+              height="12"
+              viewBox="0 0 12 12"
+              fill="none"
+              className="text-white"
+            >
+              <path
+                d="M2.5 6L5 8.5L9.5 3.5"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeDasharray="24"
+                style={{ animation: "check-draw 0.3s ease forwards" }}
+              />
+            </svg>
+          )}
+        </button>
+        {/* Confetti */}
+        {showConfetti && (
+          <div className="pointer-events-none absolute inset-0">
+            {Array.from({ length: 8 }).map((_, i) => (
+              <ConfettiParticle key={i} index={i} />
+            ))}
+          </div>
+        )}
+      </div>
 
       {/* Content */}
-      <div className="flex-1 min-w-0">
+      <button
+        onClick={() => onDetail(task)}
+        className="flex-1 min-w-0 text-left cursor-pointer"
+      >
         <p
-          className={`text-body font-medium ${
-            task.completed
-              ? "text-text-tertiary line-through"
+          className={`text-body font-medium transition-all duration-300 ${
+            showStrikethrough
+              ? "text-text-tertiary"
               : "text-text-primary"
           }`}
+          style={{ position: "relative" }}
         >
           {task.title}
+          {showStrikethrough && (
+            <span
+              className="absolute left-0 top-1/2 h-[1.5px] bg-text-tertiary"
+              style={{
+                width: "100%",
+                animation: "strikethrough 0.3s ease forwards",
+                transformOrigin: "left",
+              }}
+            />
+          )}
         </p>
         <div className="mt-1 flex items-center gap-1.5 text-small text-text-tertiary">
           <span
@@ -163,7 +285,7 @@ export function TaskItem({
             </>
           )}
         </div>
-      </div>
+      </button>
 
       {/* Menu */}
       <div className="relative">
