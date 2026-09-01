@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Check } from "lucide-react";
 import { Button } from "@/components/ui/Button";
+import { Reveal } from "@/components/ui/Reveal";
 
 export function Hero() {
   return (
@@ -12,45 +13,53 @@ export function Hero() {
         {/* Left: copy */}
         <div className="flex flex-col justify-center gap-8">
           {/* Eyebrow pill */}
-          <div className="inline-flex w-fit items-center gap-2 rounded-full border border-border-subtle bg-accent-muted px-3 py-1">
-            <span className="h-1.5 w-1.5 rounded-full bg-accent-400" />
-            <span className="text-label font-semibold uppercase tracking-widest text-accent-400">
-              A quieter way to plan
-            </span>
-          </div>
+          <Reveal>
+            <div className="inline-flex w-fit items-center gap-2 rounded-full border border-border-subtle bg-accent-muted px-3 py-1">
+              <span className="h-1.5 w-1.5 rounded-full bg-accent-400" />
+              <span className="text-label font-semibold uppercase tracking-widest text-accent-400">
+                A quieter way to plan
+              </span>
+            </div>
+          </Reveal>
 
           {/* Headline */}
-          <h1 className="text-display font-bold tracking-tight text-text-primary">
-            Make a mark<br />
-            <span className="text-accent-400">of today.</span>
-          </h1>
+          <Reveal delay={0.1}>
+            <h1 className="text-display font-bold tracking-tight text-text-primary">
+              Make a mark<br />
+              <span className="text-accent-400">of today.</span>
+            </h1>
+          </Reveal>
 
           {/* Supporting paragraph */}
-          <p className="max-w-md text-body leading-relaxed text-text-secondary">
-            Not another to-do list. A small, daily ritual — one clear intention,
-            then the rest of the day follows.
-          </p>
+          <Reveal delay={0.2}>
+            <p className="max-w-md text-body leading-relaxed text-text-secondary">
+              Not another to-do list. A small, daily ritual — one clear intention,
+              then the rest of the day follows.
+            </p>
+          </Reveal>
 
           {/* CTAs */}
-          <div className="flex items-center gap-6">
-            <Link href="/signup">
-              <Button trailing>Start your ritual</Button>
-            </Link>
-            <Link href="/signin" className="text-small text-text-secondary hover:text-text-primary transition-colors">
-              I already have a mark
-            </Link>
-          </div>
+          <Reveal delay={0.3}>
+            <div className="flex items-center gap-6">
+              <Link href="/signup">
+                <Button trailing>Start your ritual</Button>
+              </Link>
+              <Link href="/signin" className="text-small text-text-secondary hover:text-text-primary transition-colors">
+                I already have a mark
+              </Link>
+            </div>
+          </Reveal>
         </div>
 
         {/* Right: floating card mockup */}
-        <div className="relative hidden items-center justify-center md:flex">
+        <Reveal delay={0.15} className="relative hidden items-center justify-center md:flex">
           <div className="panel-elevated relative rotate-2 rounded-[--radius-lg] border border-border-subtle bg-bg-panel p-6 hover:rotate-0">
             {/* Mini task list card */}
             <div className="flex items-center gap-3 pb-3">
               <div className="flex h-5 w-5 items-center justify-center rounded-md bg-accent-500">
                 <Check size={10} className="text-white" strokeWidth={3} />
               </div>
-              <span className="text-small font-medium text-text-primary">daymark</span>
+              <span className="text-small font-medium text-text-primary">Daymarker</span>
             </div>
             <div className="space-y-2">
               {[
@@ -90,7 +99,7 @@ export function Hero() {
               <div className="h-2.5 w-20 rounded bg-bg-panel-hover" />
             </div>
           </div>
-        </div>
+        </Reveal>
       </div>
     </section>
   );

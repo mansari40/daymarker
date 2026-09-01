@@ -9,7 +9,7 @@ const geistSans = Geist({
 });
 
 export const metadata: Metadata = {
-  title: "Daymark — Make a mark of today",
+  title: "Daymarker — Make a mark of today",
   description:
     "A quieter way to plan. Minimalist daily intentions for focused, calm productivity.",
 };

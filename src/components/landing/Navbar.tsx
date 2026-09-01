@@ -12,7 +12,7 @@ export function Navbar() {
           <div className="flex h-6 w-6 items-center justify-center rounded-md bg-accent-500">
             <Check size={14} className="text-white" strokeWidth={3} />
           </div>
-          <span className="text-body font-medium text-text-primary">daymark</span>
+          <span className="text-body font-medium text-text-primary">Daymarker</span>
         </Link>
 
         {/* Center links */}

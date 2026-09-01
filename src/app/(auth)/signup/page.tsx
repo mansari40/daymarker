@@ -58,7 +58,7 @@ export default function SignUpPage() {
           <div className="flex h-6 w-6 items-center justify-center rounded-md bg-accent-500">
             <Check size={14} className="text-white" strokeWidth={3} />
           </div>
-          <span className="text-body font-medium text-text-primary">daymark</span>
+          <span className="text-body font-medium text-text-primary">Daymarker</span>
         </Link>
         <div className="flex items-center gap-4">
           <Link href="/" className="text-small text-text-secondary hover:text-text-primary transition-colors">
@@ -72,7 +72,7 @@ export default function SignUpPage() {
       <div className="hidden flex-1 items-center justify-center p-12 lg:flex">
         <div className="max-w-md">
           <span className="text-label font-semibold uppercase tracking-widest text-accent-400">
-            Daymark / Begin here
+            Daymarker / Begin here
           </span>
           <h1 className="mt-4 text-h1 font-bold leading-tight tracking-tight text-text-primary">
             Make today<br />

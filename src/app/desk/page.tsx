@@ -114,13 +114,13 @@ export default function DeskPage() {
         {/* Top meta row */}
         <div className="mb-8 flex items-center justify-between">
           <span className="text-label font-semibold uppercase tracking-widest text-text-tertiary">
-            Daymark / Personal desk
+            Daymarker / Personal desk
           </span>
           <div className="flex items-center gap-2">
             <ThemeToggle />
             <button
               onClick={() => {
-                if (confirm("Sign out of Daymark?")) {
+                if (confirm("Sign out of Daymarker?")) {
                   signOut({ callbackUrl: "/" });
                 }
               }}
