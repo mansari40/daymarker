@@ -63,7 +63,7 @@ export async function GET(req: Request) {
   } else if (status === "upcoming") {
     where.completed = false;
     where.archived = false;
-    where.dueDate = { gt: todayEnd };
+    where.dueDate = { gte: todayEnd };
   } else if (status === "completed") {
     where.completed = true;
     where.archived = false;

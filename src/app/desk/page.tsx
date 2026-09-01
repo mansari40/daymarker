@@ -172,7 +172,7 @@ export default function DeskPage() {
           {loading ? (
             <p className="py-12 text-center text-text-tertiary">Loading tasks...</p>
           ) : filteredTasks.length === 0 ? (
-            <EmptyState onAddTask={handleAddTask} />
+            <EmptyState onAddTask={handleAddTask} tab={activeTab} />
           ) : (
             <TaskList
               tasks={filteredTasks}
