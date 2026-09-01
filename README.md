@@ -1,10 +1,10 @@
 <div align="center">
 
-# Daymark
+# Daymarker
 
 ### A quieter way to plan your day.
 
-Daymark is a minimalist daily task app built around a single idea: **one clear intention, not an endless backlog.** Tasks carry a category, a weight, and a time of day instead of priority tiers and due-date pressure, and a streak/week view turns finishing your list into a small daily ritual instead of a chore.
+Daymarker is a minimalist daily task app built around a single idea: **one clear intention, not an endless backlog.** Tasks carry a category, a weight, and a time of day instead of priority tiers and due-date pressure, and a streak/week view turns finishing your list into a small daily ritual instead of a chore.
 
 [![Live on Vercel](https://img.shields.io/badge/LIVE_ON_VERCEL-Open_app-000000?style=for-the-badge&logo=vercel&logoColor=white)](https://daymarker.vercel.app)
 [![Next.js 16](https://img.shields.io/badge/Next.js-16-000000?logo=next.js&logoColor=white)](https://nextjs.org/)
@@ -20,7 +20,7 @@ Daymark is a minimalist daily task app built around a single idea: **one clear i
 [**Run locally**](#run-locally) ·
 [**API surface**](#api-surface)
 
-<p>If you find Daymark useful, please consider starring the repo ⭐</p>
+<p>If you find Daymarker useful, please consider starring the repo ⭐</p>
 
 </div>
 
@@ -28,7 +28,7 @@ Daymark is a minimalist daily task app built around a single idea: **one clear i
 
 ## The idea
 
-> **Daymark is not a project-management tool.**
+> **Daymarker is not a project-management tool.**
 
 There are no priority levels, no nested subtasks, no boards. A task has three simple dimensions, **category**, **weight**, and **time of day** and an optional due date. The app is built to make *finishing* today's list feel good, not to help you plan next quarter.
 
@@ -52,7 +52,7 @@ There are no priority levels, no nested subtasks, no boards. A task has three si
 
 ## Architecture
 
-Daymark is a single Next.js application using the App Router, there's no separate backend service. API routes under `src/app/api` handle data access directly through Prisma, and `middleware.ts` enforces auth before those routes (or the `/desk` page) ever render.
+Daymarker is a single Next.js application using the App Router, there's no separate backend service. API routes under `src/app/api` handle data access directly through Prisma, and `middleware.ts` enforces auth before those routes (or the `/desk` page) ever render.
 
 ### Request flow
 
@@ -173,7 +173,7 @@ All routes except registration and the NextAuth handlers require a valid session
 ## Repository structure
 
 ```text
-daymark/
+daymarker/
 │
 ├── prisma/
 │   ├── schema.prisma          # Task/User models
@@ -222,8 +222,8 @@ daymark/
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/<your-github-username>/daymark.git
-cd daymark
+git clone https://github.com/<your-github-username>/daymarker.git
+cd daymarker
 ```
 
 ### 2. Configure environment variables
@@ -235,7 +235,7 @@ cp .env.example .env
 Set at minimum:
 
 ```env
-DATABASE_URL=postgresql://user:password@localhost:5432/daymark
+DATABASE_URL=postgresql://user:password@localhost:5432/daymarker
 AUTH_SECRET=your_generated_secret
 ```
 
@@ -272,7 +272,7 @@ docker compose up --build
 
 ### Weight and category over priority
 
-Most task apps push urgency (P0/P1/P2, red due dates). Daymark deliberately avoids that `weight` (Light/Steady/Medium Focus/Heavy) describes effort, not importance, and there's no way to mark a task "urgent." The goal is a calmer relationship with a short list, not a queue to triage.
+Most task apps push urgency (P0/P1/P2, red due dates). Daymarker deliberately avoids that `weight` (Light/Steady/Medium Focus/Heavy) describes effort, not importance, and there's no way to mark a task "urgent." The goal is a calmer relationship with a short list, not a queue to triage.
 
 ### Streak computed server-side, not cached client state
 
@@ -291,7 +291,7 @@ Streaks and the weekly chart are recomputed from `completedAt` timestamps on eve
 **Made to help you plan a productive day**
 
 [Live App](https://daymarker.vercel.app) ·
-[GitHub](https://github.com/<your-github-username>/daymark) ·
-[Report an issue](https://github.com/<your-github-username>/daymark/issues)
+[GitHub](https://github.com/<your-github-username>/daymarker) ·
+[Report an issue](https://github.com/<your-github-username>/daymarker/issues)
 
 </div>
