@@ -12,11 +12,13 @@ import {
   setOptedIn,
   registerServiceWorker,
 } from "@/lib/notifications";
+import { getTodaysQuote } from "@/lib/quotes";
 
 export function Greeting({ onAddTask }: { onAddTask: () => void }) {
   const { data: session } = useSession();
   const now = new Date();
   const hour = now.getHours();
+  const quote = getTodaysQuote?.() ?? null;
   const greeting =
     hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening";
   const firstName = session?.user?.name?.split(" ")[0] || "there";
@@ -69,6 +71,12 @@ export function Greeting({ onAddTask }: { onAddTask: () => void }) {
               ? "How's the day shaping up?"
               : "Any marks left to make?"}
           </p>
+          {quote && (
+            <p className="mt-1 text-small text-text-tertiary italic">
+              &ldquo;{quote.content}&rdquo;
+              {quote.author && ` — ${quote.author}`}
+            </p>
+          )}
         </div>
         <Button onClick={onAddTask} trailing>
           + Add a task
