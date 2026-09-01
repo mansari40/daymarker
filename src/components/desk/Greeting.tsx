@@ -19,6 +19,26 @@ export function Greeting({ onAddTask }: { onAddTask: () => void }) {
   const now = new Date();
   const hour = now.getHours();
   const quote = getTodaysQuote?.() ?? null;
+  const quoteText = quote
+    ? `\u201C${quote.content}\u201D${quote.author ? ` \u2014 ${quote.author}` : ""}`
+    : "";
+  const [visibleChars, setVisibleChars] = useState(0);
+
+  useEffect(() => {
+    if (!quoteText) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      setVisibleChars(quoteText.length);
+      return;
+    }
+    let i = 0;
+    const interval = setInterval(() => {
+      i++;
+      setVisibleChars(i);
+      if (i >= quoteText.length) clearInterval(interval);
+    }, 30);
+    return () => clearInterval(interval);
+  }, [quoteText]);
+
   const greeting =
     hour < 12 ? "Good morning" : hour < 18 ? "Good afternoon" : "Good evening";
   const firstName = session?.user?.name?.split(" ")[0] || "there";
@@ -73,8 +93,10 @@ export function Greeting({ onAddTask }: { onAddTask: () => void }) {
           </p>
           {quote && (
             <p className="mt-1 text-small text-text-tertiary italic">
-              &ldquo;{quote.content}&rdquo;
-              {quote.author && ` — ${quote.author}`}
+              {quoteText.slice(0, visibleChars)}
+              {visibleChars < quoteText.length && (
+                <span className="inline-block w-px h-[1em] bg-text-tertiary animate-pulse ml-px align-text-bottom" />
+              )}
             </p>
           )}
         </div>
