@@ -105,7 +105,7 @@ export function TaskItem({
 
   return (
     <div
-      className={`group relative flex items-start gap-4 rounded-[--radius-lg] bg-bg-panel border border-border-subtle p-4 transition-colors hover:bg-bg-panel-hover ${
+      className={`panel-elevated group relative flex items-start gap-4 rounded-[--radius-lg] bg-bg-panel border border-border-subtle p-4 hover:bg-bg-panel-hover ${
         task.completed ? "opacity-60" : ""
       }`}
     >

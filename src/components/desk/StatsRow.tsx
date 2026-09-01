@@ -50,7 +50,7 @@ export function StatsRow({ refreshTrigger = 0 }: { refreshTrigger?: number }) {
   return (
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
       {/* Today's Mark */}
-      <div className="flex flex-col justify-between rounded-[--radius-lg] bg-bg-panel border border-border-subtle p-5">
+      <div className="panel-elevated flex flex-col justify-between rounded-[--radius-lg] bg-bg-panel border border-border-subtle p-5">
         <div>
           <span className="text-label font-semibold uppercase tracking-widest text-text-tertiary">
             Today&apos;s mark
@@ -66,7 +66,7 @@ export function StatsRow({ refreshTrigger = 0 }: { refreshTrigger?: number }) {
       </div>
 
       {/* Progress Ring */}
-      <div className="flex flex-col items-center justify-center rounded-[--radius-lg] bg-bg-panel border border-border-subtle p-5">
+      <div className="panel-elevated flex flex-col items-center justify-center rounded-[--radius-lg] bg-bg-panel border border-border-subtle p-5">
         <ProgressRing done={stats.todayDone} total={stats.todayTotal} />
         <p className="mt-3 text-small text-text-secondary">
           {stats.streak === 0
@@ -76,7 +76,7 @@ export function StatsRow({ refreshTrigger = 0 }: { refreshTrigger?: number }) {
       </div>
 
       {/* This Week */}
-      <div className="flex flex-col rounded-[--radius-lg] bg-bg-panel border border-border-subtle p-5">
+      <div className="panel-elevated flex flex-col rounded-[--radius-lg] bg-bg-panel border border-border-subtle p-5">
         <div className="flex items-center justify-between">
           <span className="text-label font-semibold uppercase tracking-widest text-text-tertiary">
             This week

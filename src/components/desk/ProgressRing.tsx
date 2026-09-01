@@ -37,6 +37,7 @@ export function ProgressRing({ done, total, size = 120 }: ProgressRingProps) {
           strokeDasharray={circumference}
           strokeDashoffset={offset}
           className="transition-all duration-500"
+          style={{ filter: "drop-shadow(0 0 6px rgba(74,222,128,0.5))" }}
         />
       </svg>
       <span className="absolute text-h2 font-bold text-text-primary">

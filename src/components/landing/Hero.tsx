@@ -4,8 +4,11 @@ import { Button } from "@/components/ui/Button";
 
 export function Hero() {
   return (
-    <section className="relative flex min-h-screen items-center pt-16">
-      <div className="mx-auto grid w-full max-w-6xl grid-cols-1 gap-12 px-6 md:grid-cols-2 md:gap-8">
+    <section className="relative flex min-h-screen items-center overflow-hidden pt-16">
+      {/* Ambient glow */}
+      <div className="pointer-events-none absolute left-1/2 top-0 -z-0 h-[480px] w-[480px] -translate-x-1/2 rounded-full bg-accent-500/10 blur-[120px]" />
+
+      <div className="relative mx-auto grid w-full max-w-6xl grid-cols-1 gap-12 px-6 md:grid-cols-2 md:gap-8">
         {/* Left: copy */}
         <div className="flex flex-col justify-center gap-8">
           {/* Eyebrow pill */}
@@ -17,7 +20,7 @@ export function Hero() {
           </div>
 
           {/* Headline */}
-          <h1 className="text-display font-bold leading-[1.05] tracking-tight text-text-primary">
+          <h1 className="text-display font-bold tracking-tight text-text-primary">
             Make a mark<br />
             <span className="text-accent-400">of today.</span>
           </h1>
@@ -41,7 +44,7 @@ export function Hero() {
 
         {/* Right: floating card mockup */}
         <div className="relative hidden items-center justify-center md:flex">
-          <div className="relative rotate-2 rounded-[--radius-lg] border border-border-subtle bg-bg-panel p-6 shadow-lg">
+          <div className="panel-elevated relative rotate-2 rounded-[--radius-lg] border border-border-subtle bg-bg-panel p-6 hover:rotate-0">
             {/* Mini task list card */}
             <div className="flex items-center gap-3 pb-3">
               <div className="flex h-5 w-5 items-center justify-center rounded-md bg-accent-500">

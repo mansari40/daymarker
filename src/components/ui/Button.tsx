@@ -19,7 +19,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     ref
   ) => {
     const base =
-      "inline-flex items-center justify-center gap-2 font-medium transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed";
+      "pressable inline-flex items-center justify-center gap-2 font-medium transition-all cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed";
 
     const radius = "rounded-full";
 
@@ -31,11 +31,11 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
 
     const variants = {
       primary:
-        "bg-btn-primary-bg text-btn-primary-text hover:opacity-90",
+        "bg-btn-primary-bg text-btn-primary-text shadow-[0_1px_2px_rgba(0,0,0,0.15)] hover:shadow-lg hover:-translate-y-0.5",
       secondary:
-        "bg-btn-secondary-bg text-text-primary border border-border-strong hover:bg-bg-panel-hover",
+        "bg-btn-secondary-bg text-text-primary border border-border-strong hover:bg-bg-panel-hover hover:-translate-y-0.5 hover:border-border-accent/40",
       ghost:
-        "bg-transparent text-text-secondary hover:text-text-primary",
+        "bg-transparent text-text-secondary hover:text-text-primary hover:bg-bg-panel-hover/60",
     };
 
     return (
