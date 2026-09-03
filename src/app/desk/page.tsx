@@ -43,7 +43,7 @@ export default function DeskPage() {
   const [streak, setStreak] = useState(0);
   const [detailTask, setDetailTask] = useState<Task | null>(null);
   const [calendarDueDate, setCalendarDueDate] = useState<string | undefined>(undefined);
-  const [missedCount, setMissedCount] = useState(0);
+  const [tabCounts, setTabCounts] = useState<Record<string, number>>({});
 
   // Popover state
   const [calendarOpen, setCalendarOpen] = useState(false);
@@ -95,10 +95,10 @@ export default function DeskPage() {
         if (data?.streak !== undefined) setStreak(data.streak);
       })
       .catch(() => {});
-    fetch("/api/tasks?status=missed")
+    fetch("/api/tasks/counts")
       .then((res) => res.json())
       .then((data) => {
-        if (Array.isArray(data)) setMissedCount(data.length);
+        if (data) setTabCounts(data);
       })
       .catch(() => {});
   }, [statsRefreshTrigger]);
@@ -182,14 +182,12 @@ export default function DeskPage() {
     [fetchTasks]
   );
 
-  const todayCount = tasks.length;
-
   const tabs = [
-    { id: "today", label: "Today", count: todayCount || undefined },
-    { id: "upcoming", label: "Upcoming" },
-    { id: "missed", label: "Missed", count: missedCount || undefined },
-    { id: "completed", label: "Completed" },
-    { id: "archive", label: "Archive" },
+    { id: "today", label: "Today", count: tabCounts.today || undefined },
+    { id: "upcoming", label: "Upcoming", count: tabCounts.upcoming || undefined },
+    { id: "missed", label: "Missed", count: tabCounts.missed || undefined },
+    { id: "completed", label: "Completed", count: tabCounts.completed || undefined },
+    { id: "archive", label: "Archive", count: tabCounts.archive || undefined },
   ];
 
   if (status === "loading" || !session) {
