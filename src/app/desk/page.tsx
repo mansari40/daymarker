@@ -183,11 +183,11 @@ export default function DeskPage() {
   );
 
   const tabs = [
-    { id: "today", label: "Today", count: tabCounts.today || undefined },
-    { id: "upcoming", label: "Upcoming", count: tabCounts.upcoming || undefined },
-    { id: "missed", label: "Missed", count: tabCounts.missed || undefined },
-    { id: "completed", label: "Completed", count: tabCounts.completed || undefined },
-    { id: "archive", label: "Archive", count: tabCounts.archive || undefined },
+    { id: "today", label: "Today", count: activeTab === "today" ? tabCounts.today || undefined : undefined },
+    { id: "upcoming", label: "Upcoming", count: activeTab === "upcoming" ? tabCounts.upcoming || undefined : undefined },
+    { id: "missed", label: "Missed", count: activeTab === "missed" ? tabCounts.missed || undefined : undefined },
+    { id: "completed", label: "Completed", count: activeTab === "completed" ? tabCounts.completed || undefined : undefined },
+    { id: "archive", label: "Archive", count: activeTab === "archive" ? tabCounts.archive || undefined : undefined },
   ];
 
   if (status === "loading" || !session) {
