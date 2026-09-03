@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useCallback, useEffect, useRef } from "react";
-import { Search, ArrowUpDown, LogOut, Calendar, User } from "lucide-react";
+import { LogOut, Calendar, User } from "lucide-react";
 import { useSession, signOut } from "next-auth/react";
 import { Greeting } from "@/components/desk/Greeting";
 import { EmptyState } from "@/components/desk/EmptyState";
@@ -36,7 +36,6 @@ export default function DeskPage() {
   const { data: session, status } = useSession();
   const [activeTab, setActiveTab] = useState("today");
   const [showAddModal, setShowAddModal] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
   const [editingTask, setEditingTask] = useState<Task | null>(null);
@@ -45,7 +44,6 @@ export default function DeskPage() {
   const [detailTask, setDetailTask] = useState<Task | null>(null);
   const [calendarDueDate, setCalendarDueDate] = useState<string | undefined>(undefined);
   const [missedCount, setMissedCount] = useState(0);
-  const searchRef = useRef<HTMLInputElement>(null);
 
   // Popover state
   const [calendarOpen, setCalendarOpen] = useState(false);
@@ -118,11 +116,6 @@ export default function DeskPage() {
         setShowAddModal(true);
       }
 
-      if (e.key === "/" && !isInput && !e.metaKey && !e.ctrlKey) {
-        e.preventDefault();
-        searchRef.current?.focus();
-      }
-
       if (e.key === "Escape") {
         if (detailTask) {
           setDetailTask(null);
@@ -187,10 +180,6 @@ export default function DeskPage() {
       }
     },
     [fetchTasks]
-  );
-
-  const filteredTasks = tasks.filter((t) =>
-    searchQuery ? t.title.toLowerCase().includes(searchQuery.toLowerCase()) : true
   );
 
   const todayCount = tasks.length;
@@ -300,31 +289,13 @@ export default function DeskPage() {
         {loading ? <SkeletonGreeting /> : <Greeting onAddTask={handleAddTask} />}
 
         {/* List panel header */}
-        <div className="mt-12 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <span className="text-label font-semibold uppercase tracking-widest text-accent-400">
-              Your list
-            </span>
-            <h2 className="mt-1 text-h2 font-bold text-text-primary">
-              The next right things.
-            </h2>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="relative">
-              <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-text-tertiary" />
-              <input
-                ref={searchRef}
-                type="text"
-                placeholder="Find a task (press /)"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="h-9 w-48 rounded-[--radius-md] bg-bg-input pl-9 pr-3 text-small text-text-primary border border-border-subtle placeholder:text-text-tertiary focus:outline-none focus:border-border-accent focus:ring-1 focus:ring-border-accent transition-colors"
-              />
-            </div>
-            <button className="flex h-9 w-9 items-center justify-center rounded-[--radius-md] border border-border-subtle text-text-tertiary hover:text-text-primary transition-colors cursor-pointer">
-              <ArrowUpDown size={14} />
-            </button>
-          </div>
+        <div className="mt-12">
+          <span className="text-label font-semibold uppercase tracking-widest text-accent-400">
+            Your list
+          </span>
+          <h2 className="mt-1 text-h2 font-bold text-text-primary">
+            The next right things.
+          </h2>
         </div>
 
         {/* Tabs */}
@@ -340,11 +311,11 @@ export default function DeskPage() {
                 <SkeletonTask key={i} />
               ))}
             </div>
-          ) : filteredTasks.length === 0 ? (
+          ) : tasks.length === 0 ? (
             <EmptyState onAddTask={handleAddTask} tab={activeTab} />
           ) : (
             <TaskList
-              tasks={filteredTasks}
+              tasks={tasks}
               onEdit={handleEditTask}
               onRefresh={fetchTasks}
               onMutated={bumpStats}

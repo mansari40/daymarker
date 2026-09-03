@@ -84,13 +84,6 @@ export function Greeting({ onAddTask }: { onAddTask: () => void }) {
           <h1 className="mt-2 text-h1 font-bold tracking-tight text-text-primary">
             {greeting}, {firstName}.
           </h1>
-          <p className="mt-1 text-body text-text-secondary">
-            {hour < 12
-              ? "What would make today feel complete?"
-              : hour < 18
-              ? "How's the day shaping up?"
-              : "Any marks left to make?"}
-          </p>
           {quote && (
             <p className="mt-1 text-small text-text-tertiary italic">
               {quoteText.slice(0, visibleChars)}
