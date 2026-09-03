@@ -13,6 +13,7 @@ interface CalendarTask {
 
 interface CalendarViewProps {
   onAddTask: (dueDate?: string) => void;
+  compact?: boolean;
 }
 
 const WEEKDAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
@@ -83,7 +84,7 @@ const timeLabels: Record<string, string> = {
   ANYTIME: "Anytime",
 };
 
-export function CalendarView({ onAddTask }: CalendarViewProps) {
+export function CalendarView({ onAddTask, compact = false }: CalendarViewProps) {
   const now = new Date();
   const [year, setYear] = useState(now.getFullYear());
   const [month, setMonth] = useState(now.getMonth());
@@ -172,46 +173,46 @@ export function CalendarView({ onAddTask }: CalendarViewProps) {
   const days = getDaysInMonth(year, month);
 
   return (
-    <div className="mt-2">
+    <div className={compact ? "" : "mt-2"}>
       {/* Header */}
-      <div className="flex items-center justify-between mb-6">
-        <h2 className="text-h2 font-bold text-text-primary">
+      <div className={`flex items-center justify-between ${compact ? "mb-3" : "mb-6"}`}>
+        <h2 className={compact ? "text-body font-bold text-text-primary" : "text-h2 font-bold text-text-primary"}>
           {formatMonthLabel(year, month)}
         </h2>
         <div className="flex items-center gap-2">
           <button
             onClick={goToToday}
-            className="px-3 py-1.5 text-small font-medium text-text-secondary rounded-full border border-border-subtle hover:bg-bg-panel-hover hover:text-text-primary transition-colors cursor-pointer"
+            className={`${compact ? "px-2 py-1 text-[12px]" : "px-3 py-1.5 text-small"} font-medium text-text-secondary rounded-full border border-border-subtle hover:bg-bg-panel-hover hover:text-text-primary transition-colors cursor-pointer`}
           >
             Today
           </button>
           <button
             onClick={goToPrevMonth}
-            className="flex h-8 w-8 items-center justify-center rounded-full border border-border-subtle text-text-tertiary hover:text-text-primary hover:bg-bg-panel-hover transition-colors cursor-pointer"
+            className={`${compact ? "h-6 w-6" : "h-8 w-8"} flex items-center justify-center rounded-full border border-border-subtle text-text-tertiary hover:text-text-primary hover:bg-bg-panel-hover transition-colors cursor-pointer`}
             aria-label="Previous month"
           >
-            <ChevronLeft size={16} />
+            <ChevronLeft size={compact ? 14 : 16} />
           </button>
           <button
             onClick={goToNextMonth}
-            className="flex h-8 w-8 items-center justify-center rounded-full border border-border-subtle text-text-tertiary hover:text-text-primary hover:bg-bg-panel-hover transition-colors cursor-pointer"
+            className={`${compact ? "h-6 w-6" : "h-8 w-8"} flex items-center justify-center rounded-full border border-border-subtle text-text-tertiary hover:text-text-primary hover:bg-bg-panel-hover transition-colors cursor-pointer`}
             aria-label="Next month"
           >
-            <ChevronRight size={16} />
+            <ChevronRight size={compact ? 14 : 16} />
           </button>
         </div>
       </div>
 
       {/* Calendar Grid */}
-      <div className="rounded-[--radius-lg] bg-bg-panel border border-border-subtle p-4">
+      <div className={`${compact ? "p-2" : "p-4"}`}>
         {/* Weekday headers */}
-        <div className="grid grid-cols-7 mb-2">
+        <div className="grid grid-cols-7 mb-1">
           {WEEKDAYS.map((day) => (
             <div
               key={day}
-              className="text-center text-label font-semibold uppercase tracking-widest text-text-tertiary py-2"
+              className={`text-center text-label font-semibold uppercase tracking-widest text-text-tertiary ${compact ? "py-1" : "py-2"}`}
             >
-              {day}
+              {compact ? day.charAt(0) : day}
             </div>
           ))}
         </div>
@@ -222,7 +223,7 @@ export function CalendarView({ onAddTask }: CalendarViewProps) {
             {Array.from({ length: 42 }).map((_, i) => (
               <div
                 key={i}
-                className="aspect-square rounded-[--radius-sm] animate-pulse bg-bg-panel-hover"
+                className={`${compact ? "h-9" : "aspect-square"} rounded-[--radius-sm] animate-pulse bg-bg-panel-hover`}
               />
             ))}
           </div>
@@ -238,18 +239,16 @@ export function CalendarView({ onAddTask }: CalendarViewProps) {
               return (
                 <div
                   key={idx}
-                  className={`relative aspect-square flex flex-col items-center justify-start pt-2 rounded-[--radius-sm] transition-colors ${
-                    inMonth
-                      ? "cursor-default"
-                      : "opacity-25 cursor-default"
-                  } ${today ? "ring-1 ring-accent-400" : ""} ${
-                    hoveredDate === dateKey ? "bg-bg-panel-hover" : ""
-                  }`}
+                  className={`relative flex flex-col items-center justify-start rounded-[--radius-sm] transition-colors ${
+                    compact ? "h-9 pt-1" : "aspect-square pt-2"
+                  } ${inMonth ? "cursor-default" : "opacity-25 cursor-default"} ${
+                    today ? "ring-1 ring-accent-400" : ""
+                  } ${hoveredDate === dateKey ? "bg-bg-panel-hover" : ""}`}
                   onMouseEnter={() => inMonth && count > 0 && handleMouseEnter(dateKey)}
                   onMouseLeave={handleMouseLeave}
                 >
                   <span
-                    className={`text-body ${
+                    className={`${compact ? "text-[13px]" : "text-body"} ${
                       today
                         ? "font-bold text-accent-400"
                         : inMonth
@@ -261,7 +260,7 @@ export function CalendarView({ onAddTask }: CalendarViewProps) {
                   </span>
 
                   {count > 0 && inMonth && (
-                    <div className={`mt-1 h-2 w-2 rounded-full ${getDotColor(count)}`} />
+                    <div className={`${compact ? "mt-0.5 h-1.5 w-1.5" : "mt-1 h-2 w-2"} rounded-full ${getDotColor(count)}`} />
                   )}
 
                   {/* Hover Popover */}
@@ -272,12 +271,12 @@ export function CalendarView({ onAddTask }: CalendarViewProps) {
                         if (hoverTimeoutRef.current) clearTimeout(hoverTimeoutRef.current);
                       }}
                       onMouseLeave={handleMouseLeave}
-                      className="absolute top-full left-1/2 -translate-x-1/2 z-50 mt-1 w-56 rounded-[--radius-md] bg-bg-panel border border-border-strong shadow-[var(--shadow-lifted)] p-3"
+                      className="absolute top-full left-1/2 -translate-x-1/2 z-50 mt-1 w-52 rounded-[--radius-md] bg-bg-panel border border-border-strong shadow-[var(--shadow-lifted)] p-3"
                     >
                       <div className="text-label font-semibold uppercase tracking-widest text-text-tertiary mb-2">
                         {count} task{count !== 1 ? "s" : ""}
                       </div>
-                      <div className="flex flex-col gap-1.5 max-h-40 overflow-y-auto">
+                      <div className="flex flex-col gap-1.5 max-h-36 overflow-y-auto">
                         {tasks.map((task) => (
                           <div
                             key={task.id}
@@ -309,18 +308,18 @@ export function CalendarView({ onAddTask }: CalendarViewProps) {
       </div>
 
       {/* Legend */}
-      <div className="mt-4 flex items-center justify-center gap-6 text-[12px] text-text-tertiary">
-        <div className="flex items-center gap-1.5">
-          <div className="h-2 w-2 rounded-full bg-[var(--calendar-dot-low)]" />
-          <span>1 task</span>
+      <div className={`${compact ? "mt-2 gap-4" : "mt-4 gap-6"} flex items-center justify-center text-[11px] text-text-tertiary`}>
+        <div className="flex items-center gap-1">
+          <div className={`${compact ? "h-1.5 w-1.5" : "h-2 w-2"} rounded-full bg-[var(--calendar-dot-low)]`} />
+          <span>1</span>
         </div>
-        <div className="flex items-center gap-1.5">
-          <div className="h-2 w-2 rounded-full bg-[var(--calendar-dot-mid)]" />
-          <span>2–3 tasks</span>
+        <div className="flex items-center gap-1">
+          <div className={`${compact ? "h-1.5 w-1.5" : "h-2 w-2"} rounded-full bg-[var(--calendar-dot-mid)]`} />
+          <span>2–3</span>
         </div>
-        <div className="flex items-center gap-1.5">
-          <div className="h-2 w-2 rounded-full bg-[var(--calendar-dot-high)]" />
-          <span>4+ tasks</span>
+        <div className="flex items-center gap-1">
+          <div className={`${compact ? "h-1.5 w-1.5" : "h-2 w-2"} rounded-full bg-[var(--calendar-dot-high)]`} />
+          <span>4+</span>
         </div>
       </div>
     </div>

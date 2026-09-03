@@ -11,7 +11,11 @@ interface UserStats {
   totalCompleted: number;
 }
 
-export function AccountView() {
+interface AccountViewProps {
+  compact?: boolean;
+}
+
+export function AccountView({ compact = false }: AccountViewProps) {
   const { data: session } = useSession();
   const [stats, setStats] = useState<UserStats | null>(null);
 
@@ -123,32 +127,36 @@ export function AccountView() {
       })
     : null;
 
+  const p = compact ? "p-4" : "p-6";
+  const gap = compact ? "gap-3" : "gap-4";
+  const mt = compact ? "mt-3" : "mt-4";
+
   return (
-    <div className="mt-2 max-w-2xl">
+    <div className={compact ? "w-full" : "mt-2 max-w-2xl"}>
       {/* User Info */}
-      <div className="rounded-[--radius-lg] bg-bg-panel border border-border-subtle p-6">
+      <div className={`rounded-[--radius-lg] bg-bg-panel border border-border-subtle ${p}`}>
         <span className="text-label font-semibold uppercase tracking-widest text-accent-400">
           Profile
         </span>
-        <div className="mt-4 flex flex-col gap-4">
-          <div className="flex flex-col gap-1">
-            <span className="text-label font-semibold uppercase tracking-widest text-text-tertiary">
+        <div className={`flex flex-col ${gap}`} style={{ marginTop: compact ? "10px" : "16px" }}>
+          <div className="flex flex-col gap-0.5">
+            <span className="text-[11px] font-semibold uppercase tracking-widest text-text-tertiary">
               Name
             </span>
-            <span className="text-body text-text-primary">{user?.name || "—"}</span>
+            <span className={`${compact ? "text-small" : "text-body"} text-text-primary`}>{user?.name || "—"}</span>
           </div>
-          <div className="flex flex-col gap-1">
-            <span className="text-label font-semibold uppercase tracking-widest text-text-tertiary">
+          <div className="flex flex-col gap-0.5">
+            <span className="text-[11px] font-semibold uppercase tracking-widest text-text-tertiary">
               Email
             </span>
-            <span className="text-body text-text-primary">{user?.email || "—"}</span>
+            <span className={`${compact ? "text-small" : "text-body"} text-text-primary`}>{user?.email || "—"}</span>
           </div>
           {memberSinceDate && (
-            <div className="flex flex-col gap-1">
-              <span className="text-label font-semibold uppercase tracking-widest text-text-tertiary">
+            <div className="flex flex-col gap-0.5">
+              <span className="text-[11px] font-semibold uppercase tracking-widest text-text-tertiary">
                 Member since
               </span>
-              <span className="text-body text-text-primary">{memberSinceDate}</span>
+              <span className={`${compact ? "text-small" : "text-body"} text-text-primary`}>{memberSinceDate}</span>
             </div>
           )}
         </div>
@@ -156,28 +164,28 @@ export function AccountView() {
 
       {/* Stats */}
       {stats && (
-        <div className="mt-4 rounded-[--radius-lg] bg-bg-panel border border-border-subtle p-6">
+        <div className={`${mt} rounded-[--radius-lg] bg-bg-panel border border-border-subtle ${p}`}>
           <span className="text-label font-semibold uppercase tracking-widest text-accent-400">
             Your activity
           </span>
-          <div className="mt-4 flex items-center gap-8">
-            <div className="flex flex-col gap-1">
-              <span className="text-h2 font-bold text-text-primary">
+          <div className="flex items-center gap-6" style={{ marginTop: compact ? "10px" : "16px" }}>
+            <div className="flex flex-col gap-0.5">
+              <span className={`${compact ? "text-body" : "text-h2"} font-bold text-text-primary`}>
                 {stats.totalCompleted}
               </span>
-              <span className="text-small text-text-secondary">Tasks completed</span>
+              <span className={`${compact ? "text-[12px]" : "text-small"} text-text-secondary`}>Tasks completed</span>
             </div>
           </div>
         </div>
       )}
 
       {/* Change Password */}
-      <div className="mt-4 rounded-[--radius-lg] bg-bg-panel border border-border-subtle p-6">
+      <div className={`${mt} rounded-[--radius-lg] bg-bg-panel border border-border-subtle ${p}`}>
         <span className="text-label font-semibold uppercase tracking-widest text-accent-400">
           Change password
         </span>
 
-        <form onSubmit={handlePasswordChange} className="mt-4 flex flex-col gap-5">
+        <form onSubmit={handlePasswordChange} className={`flex flex-col ${compact ? "gap-3" : "gap-5"}`} style={{ marginTop: compact ? "10px" : "16px" }}>
           <div className="relative">
             <Input
               label="Current password"
@@ -186,6 +194,7 @@ export function AccountView() {
               value={currentPassword}
               onChange={(e) => setCurrentPassword(e.target.value)}
               required
+              className={compact ? "h-10 text-small" : ""}
             />
             <button
               type="button"
@@ -205,6 +214,7 @@ export function AccountView() {
               onChange={(e) => setNewPassword(e.target.value)}
               required
               minLength={8}
+              className={compact ? "h-10 text-small" : ""}
             />
             <button
               type="button"
@@ -224,6 +234,7 @@ export function AccountView() {
               onChange={(e) => setConfirmPassword(e.target.value)}
               required
               minLength={8}
+              className={compact ? "h-10 text-small" : ""}
             />
             <button
               type="button"
@@ -235,47 +246,63 @@ export function AccountView() {
           </div>
 
           {passwordError && (
-            <p className="text-small text-red-400">{passwordError}</p>
+            <p className="text-[13px] text-red-400">{passwordError}</p>
           )}
 
           {passwordSuccess && (
-            <div className="flex items-center gap-2 rounded-[--radius-sm] bg-green-500/10 border border-green-500/20 px-4 py-3">
-              <CheckCircle size={16} className="text-green-400 shrink-0" />
-              <p className="text-small text-green-400">Password successfully changed.</p>
+            <div className="flex items-center gap-2 rounded-[--radius-sm] bg-green-500/10 border border-green-500/20 px-3 py-2">
+              <CheckCircle size={14} className="text-green-400 shrink-0" />
+              <p className="text-[13px] text-green-400">Password successfully changed.</p>
             </div>
           )}
 
           <div>
-            <Button type="submit" disabled={passwordLoading}>
+            <Button type="submit" disabled={passwordLoading} size={compact ? "sm" : "md"}>
               {passwordLoading ? "Changing..." : "Change password"}
             </Button>
           </div>
         </form>
       </div>
 
-      {/* Danger Zone */}
-      <div className="mt-4 rounded-[--radius-lg] bg-bg-panel border border-red-500/20 p-6">
-        <span className="text-label font-semibold uppercase tracking-widest text-red-400">
-          Danger zone
-        </span>
-        <p className="mt-2 text-small text-text-secondary">
-          Permanently delete your account and all associated tasks. This action cannot be undone.
-        </p>
-        <div className="mt-4">
-          <Button
-            variant="secondary"
+      {/* Delete Account — inline link in compact, card in full */}
+      {compact ? (
+        <div className={`${mt} border-t border-border-subtle pt-3`}>
+          <button
             onClick={() => {
               setShowDeleteModal(true);
               setDeleteConfirmText("");
               setDeletePassword("");
               setDeleteError(null);
             }}
-            className="border-red-500/30 text-red-400 hover:bg-red-500/10 hover:border-red-500/40"
+            className="text-[13px] text-red-400 hover:text-red-300 transition-colors cursor-pointer"
           >
             Delete account
-          </Button>
+          </button>
         </div>
-      </div>
+      ) : (
+        <div className={`${mt} rounded-[--radius-lg] bg-bg-panel border border-red-500/20 p-6`}>
+          <span className="text-label font-semibold uppercase tracking-widest text-red-400">
+            Danger zone
+          </span>
+          <p className="mt-2 text-small text-text-secondary">
+            Permanently delete your account and all associated tasks. This action cannot be undone.
+          </p>
+          <div className="mt-4">
+            <Button
+              variant="secondary"
+              onClick={() => {
+                setShowDeleteModal(true);
+                setDeleteConfirmText("");
+                setDeletePassword("");
+                setDeleteError(null);
+              }}
+              className="border-red-500/30 text-red-400 hover:bg-red-500/10 hover:border-red-500/40"
+            >
+              Delete account
+            </Button>
+          </div>
+        </div>
+      )}
 
       {/* Delete Confirmation Modal */}
       {showDeleteModal && (

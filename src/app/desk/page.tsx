@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useCallback, useEffect, useRef } from "react";
-import { Search, ArrowUpDown, LogOut } from "lucide-react";
+import { Search, ArrowUpDown, LogOut, Calendar, User } from "lucide-react";
 import { useSession, signOut } from "next-auth/react";
 import { Greeting } from "@/components/desk/Greeting";
 import { EmptyState } from "@/components/desk/EmptyState";
@@ -16,6 +16,7 @@ import { Tabs } from "@/components/ui/Tabs";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import { CalendarView } from "@/components/desk/CalendarView";
 import { AccountView } from "@/components/desk/AccountView";
+import { Popover } from "@/components/ui/Popover";
 
 interface Task {
   id: string;
@@ -45,6 +46,12 @@ export default function DeskPage() {
   const [calendarDueDate, setCalendarDueDate] = useState<string | undefined>(undefined);
   const searchRef = useRef<HTMLInputElement>(null);
 
+  // Popover state
+  const [calendarOpen, setCalendarOpen] = useState(false);
+  const [accountOpen, setAccountOpen] = useState(false);
+  const calendarBtnRef = useRef<HTMLButtonElement>(null);
+  const accountBtnRef = useRef<HTMLButtonElement>(null);
+
   const bumpStats = useCallback(() => {
     setStatsRefreshTrigger((n) => n + 1);
   }, []);
@@ -64,7 +71,7 @@ export default function DeskPage() {
   }, [activeTab]);
 
   useEffect(() => {
-    if (status === "authenticated" && activeTab !== "calendar" && activeTab !== "account") {
+    if (status === "authenticated") {
       const doFetch = async () => {
         try {
           const res = await fetch(`/api/tasks?status=${activeTab}`);
@@ -79,8 +86,6 @@ export default function DeskPage() {
         }
       };
       void doFetch();
-    } else {
-      setLoading(false);
     }
   }, [status, activeTab]);
 
@@ -140,6 +145,7 @@ export default function DeskPage() {
     setEditingTask(null);
     setCalendarDueDate(dueDate);
     setShowAddModal(true);
+    setCalendarOpen(false);
   }, []);
 
   const handleEditTask = useCallback((task: Task) => {
@@ -187,8 +193,6 @@ export default function DeskPage() {
     { id: "upcoming", label: "Upcoming" },
     { id: "completed", label: "Completed" },
     { id: "archive", label: "Archive" },
-    { id: "calendar", label: "Calendar" },
-    { id: "account", label: "My Account" },
   ];
 
   if (status === "loading" || !session) {
@@ -209,7 +213,63 @@ export default function DeskPage() {
           <span className="text-label font-semibold uppercase tracking-widest text-text-tertiary">
             Daymarker / Personal desk
           </span>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 relative">
+            {/* Calendar button + popover */}
+            <button
+              ref={calendarBtnRef}
+              onClick={() => {
+                setCalendarOpen(!calendarOpen);
+                setAccountOpen(false);
+              }}
+              className={`flex h-8 w-8 items-center justify-center rounded-full border transition-colors cursor-pointer ${
+                calendarOpen
+                  ? "border-border-accent text-accent-400 bg-accent-muted"
+                  : "border-border-subtle text-text-tertiary hover:text-text-primary"
+              }`}
+              aria-label="Calendar"
+            >
+              <Calendar size={16} />
+            </button>
+            <Popover
+              open={calendarOpen}
+              onClose={() => setCalendarOpen(false)}
+              anchorRef={calendarBtnRef}
+              align="right"
+              className="w-[360px]"
+            >
+              <div className="p-3 max-h-[80vh] overflow-y-auto">
+                <CalendarView onAddTask={handleCalendarAddTask} compact />
+              </div>
+            </Popover>
+
+            {/* Account button + popover */}
+            <button
+              ref={accountBtnRef}
+              onClick={() => {
+                setAccountOpen(!accountOpen);
+                setCalendarOpen(false);
+              }}
+              className={`flex h-8 w-8 items-center justify-center rounded-full border transition-colors cursor-pointer ${
+                accountOpen
+                  ? "border-border-accent text-accent-400 bg-accent-muted"
+                  : "border-border-subtle text-text-tertiary hover:text-text-primary"
+              }`}
+              aria-label="My account"
+            >
+              <User size={16} />
+            </button>
+            <Popover
+              open={accountOpen}
+              onClose={() => setAccountOpen(false)}
+              anchorRef={accountBtnRef}
+              align="right"
+              className="w-[340px]"
+            >
+              <div className="p-3 max-h-[80vh] overflow-y-auto">
+                <AccountView compact />
+              </div>
+            </Popover>
+
             <ThemeToggle />
             <button
               onClick={() => {
@@ -228,35 +288,33 @@ export default function DeskPage() {
         {/* Greeting */}
         {loading ? <SkeletonGreeting /> : <Greeting onAddTask={handleAddTask} />}
 
-        {/* List panel header — hidden for calendar & account */}
-        {activeTab !== "calendar" && activeTab !== "account" && (
-          <div className="mt-12 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-              <span className="text-label font-semibold uppercase tracking-widest text-accent-400">
-                Your list
-              </span>
-              <h2 className="mt-1 text-h2 font-bold text-text-primary">
-                The next right things.
-              </h2>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="relative">
-                <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-text-tertiary" />
-                <input
-                  ref={searchRef}
-                  type="text"
-                  placeholder="Find a task (press /)"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="h-9 w-48 rounded-[--radius-md] bg-bg-input pl-9 pr-3 text-small text-text-primary border border-border-subtle placeholder:text-text-tertiary focus:outline-none focus:border-border-accent focus:ring-1 focus:ring-border-accent transition-colors"
-                />
-              </div>
-              <button className="flex h-9 w-9 items-center justify-center rounded-[--radius-md] border border-border-subtle text-text-tertiary hover:text-text-primary transition-colors cursor-pointer">
-                <ArrowUpDown size={14} />
-              </button>
-            </div>
+        {/* List panel header */}
+        <div className="mt-12 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <span className="text-label font-semibold uppercase tracking-widest text-accent-400">
+              Your list
+            </span>
+            <h2 className="mt-1 text-h2 font-bold text-text-primary">
+              The next right things.
+            </h2>
           </div>
-        )}
+          <div className="flex items-center gap-2">
+            <div className="relative">
+              <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-text-tertiary" />
+              <input
+                ref={searchRef}
+                type="text"
+                placeholder="Find a task (press /)"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="h-9 w-48 rounded-[--radius-md] bg-bg-input pl-9 pr-3 text-small text-text-primary border border-border-subtle placeholder:text-text-tertiary focus:outline-none focus:border-border-accent focus:ring-1 focus:ring-border-accent transition-colors"
+              />
+            </div>
+            <button className="flex h-9 w-9 items-center justify-center rounded-[--radius-md] border border-border-subtle text-text-tertiary hover:text-text-primary transition-colors cursor-pointer">
+              <ArrowUpDown size={14} />
+            </button>
+          </div>
+        </div>
 
         {/* Tabs */}
         <div className="mt-6">
@@ -265,11 +323,7 @@ export default function DeskPage() {
 
         {/* Content area */}
         <div className="mt-6">
-          {activeTab === "calendar" ? (
-            <CalendarView onAddTask={handleCalendarAddTask} />
-          ) : activeTab === "account" ? (
-            <AccountView />
-          ) : loading ? (
+          {loading ? (
             <div className="flex flex-col gap-3">
               {[1, 2, 3, 4].map((i) => (
                 <SkeletonTask key={i} />
@@ -291,12 +345,10 @@ export default function DeskPage() {
           )}
         </div>
 
-        {/* Stats footer — hidden for calendar & account */}
-        {activeTab !== "calendar" && activeTab !== "account" && (
-          <div className="mt-12">
-            <StatsRow refreshTrigger={statsRefreshTrigger} />
-          </div>
-        )}
+        {/* Stats footer */}
+        <div className="mt-12">
+          <StatsRow refreshTrigger={statsRefreshTrigger} />
+        </div>
       </div>
 
       {/* Bottom banner */}
