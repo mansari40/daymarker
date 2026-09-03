@@ -44,6 +44,7 @@ export default function DeskPage() {
   const [streak, setStreak] = useState(0);
   const [detailTask, setDetailTask] = useState<Task | null>(null);
   const [calendarDueDate, setCalendarDueDate] = useState<string | undefined>(undefined);
+  const [missedCount, setMissedCount] = useState(0);
   const searchRef = useRef<HTMLInputElement>(null);
 
   // Popover state
@@ -94,6 +95,12 @@ export default function DeskPage() {
       .then((res) => res.json())
       .then((data) => {
         if (data?.streak !== undefined) setStreak(data.streak);
+      })
+      .catch(() => {});
+    fetch("/api/tasks?status=missed")
+      .then((res) => res.json())
+      .then((data) => {
+        if (Array.isArray(data)) setMissedCount(data.length);
       })
       .catch(() => {});
   }, [statsRefreshTrigger]);
@@ -191,6 +198,7 @@ export default function DeskPage() {
   const tabs = [
     { id: "today", label: "Today", count: todayCount || undefined },
     { id: "upcoming", label: "Upcoming" },
+    { id: "missed", label: "Missed", count: missedCount || undefined },
     { id: "completed", label: "Completed" },
     { id: "archive", label: "Archive" },
   ];
@@ -227,6 +235,7 @@ export default function DeskPage() {
                   : "border-border-subtle text-text-tertiary hover:text-text-primary"
               }`}
               aria-label="Calendar"
+              title="Calendar"
             >
               <Calendar size={16} />
             </button>
@@ -255,6 +264,7 @@ export default function DeskPage() {
                   : "border-border-subtle text-text-tertiary hover:text-text-primary"
               }`}
               aria-label="My account"
+              title="My account"
             >
               <User size={16} />
             </button>
@@ -279,6 +289,7 @@ export default function DeskPage() {
               }}
               className="flex h-8 w-8 items-center justify-center rounded-full border border-border-subtle text-text-tertiary hover:text-text-primary transition-colors cursor-pointer"
               aria-label="Sign out"
+              title="Sign out"
             >
               <LogOut size={16} />
             </button>
@@ -339,7 +350,7 @@ export default function DeskPage() {
               onMutated={bumpStats}
               onDetail={handleDetail}
               onReorder={handleReorder}
-              groupByTimeOfDay={activeTab === "today"}
+              groupByTimeOfDay={activeTab === "today" || activeTab === "missed"}
               draggable={activeTab === "today" || activeTab === "upcoming"}
             />
           )}

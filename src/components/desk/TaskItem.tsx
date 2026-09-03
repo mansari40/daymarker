@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useCallback, useRef } from "react";
-import { Check, MoreHorizontal, Pencil, Trash2, Archive, GripVertical } from "lucide-react";
+import { Check, Pencil, Trash2, Archive, GripVertical } from "lucide-react";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 
@@ -92,7 +92,6 @@ export function TaskItem({
   onDetail: (task: Task) => void;
   draggable?: boolean;
 }) {
-  const [showMenu, setShowMenu] = useState(false);
   const [loading, setLoading] = useState(false);
   const [justCompleted, setJustCompleted] = useState(false);
   const [showConfetti, setShowConfetti] = useState(false);
@@ -147,7 +146,6 @@ export function TaskItem({
       onMutated();
     } finally {
       setLoading(false);
-      setShowMenu(false);
     }
   }, [task.id, onRefresh, onMutated]);
 
@@ -163,7 +161,6 @@ export function TaskItem({
       onMutated();
     } finally {
       setLoading(false);
-      setShowMenu(false);
     }
   }, [task.id, onRefresh, onMutated]);
 
@@ -195,6 +192,7 @@ export function TaskItem({
           onClick={handleToggleComplete}
           disabled={loading}
           className="flex h-5 w-5 items-center justify-center rounded-full border transition-all duration-300 cursor-pointer"
+          aria-label={task.completed ? `Mark ${task.title} as incomplete` : `Mark ${task.title} as complete`}
           style={{
             borderColor: task.completed
               ? "var(--accent-500)"
@@ -287,49 +285,38 @@ export function TaskItem({
         </div>
       </button>
 
-      {/* Menu */}
-      <div className="relative">
+      {/* Actions — visible on hover */}
+      <div className="flex items-center gap-0.5 opacity-0 group-hover:opacity-100 transition-opacity">
         <button
-          onClick={() => setShowMenu(!showMenu)}
-          className="flex h-8 w-8 items-center justify-center rounded-[--radius-md] text-text-tertiary hover:text-text-primary hover:bg-bg-panel-hover transition-colors cursor-pointer opacity-0 group-hover:opacity-100"
+          onClick={(e) => {
+            e.stopPropagation();
+            onEdit();
+          }}
+          className="flex h-7 w-7 items-center justify-center rounded-[--radius-sm] text-text-tertiary hover:text-text-primary hover:bg-bg-panel-hover transition-colors cursor-pointer"
+          aria-label={`Edit ${task.title}`}
         >
-          <MoreHorizontal size={16} />
+          <Pencil size={14} />
         </button>
-
-        {showMenu && (
-          <>
-            <div
-              className="fixed inset-0 z-10"
-              onClick={() => setShowMenu(false)}
-            />
-            <div className="absolute right-0 top-full z-20 mt-1 w-40 rounded-[--radius-md] bg-bg-panel border border-border-subtle py-1 shadow-lg">
-              <button
-                onClick={() => {
-                  setShowMenu(false);
-                  onEdit();
-                }}
-                className="flex w-full items-center gap-2 px-3 py-2 text-small text-text-secondary hover:text-text-primary hover:bg-bg-panel-hover transition-colors cursor-pointer"
-              >
-                <Pencil size={14} />
-                Edit
-              </button>
-              <button
-                onClick={handleArchive}
-                className="flex w-full items-center gap-2 px-3 py-2 text-small text-text-secondary hover:text-text-primary hover:bg-bg-panel-hover transition-colors cursor-pointer"
-              >
-                <Archive size={14} />
-                Archive
-              </button>
-              <button
-                onClick={handleDelete}
-                className="flex w-full items-center gap-2 px-3 py-2 text-small text-red-400 hover:bg-bg-panel-hover transition-colors cursor-pointer"
-              >
-                <Trash2 size={14} />
-                Delete
-              </button>
-            </div>
-          </>
-        )}
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            handleArchive();
+          }}
+          className="flex h-7 w-7 items-center justify-center rounded-[--radius-sm] text-text-tertiary hover:text-text-primary hover:bg-bg-panel-hover transition-colors cursor-pointer"
+          aria-label={`Archive ${task.title}`}
+        >
+          <Archive size={14} />
+        </button>
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            handleDelete();
+          }}
+          className="flex h-7 w-7 items-center justify-center rounded-[--radius-sm] text-text-tertiary hover:text-red-400 hover:bg-bg-panel-hover transition-colors cursor-pointer"
+          aria-label={`Delete ${task.title}`}
+        >
+          <Trash2 size={14} />
+        </button>
       </div>
     </div>
   );

@@ -64,6 +64,10 @@ export async function GET(req: Request) {
     where.completed = false;
     where.archived = false;
     where.dueDate = { gte: todayEnd };
+  } else if (status === "missed") {
+    where.completed = false;
+    where.archived = false;
+    where.dueDate = { lt: todayStart };
   } else if (status === "completed") {
     where.completed = true;
     where.archived = false;

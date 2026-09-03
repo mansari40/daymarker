@@ -21,8 +21,8 @@ export function Tabs({ tabs, activeTab, onChange }: TabsProps) {
           <button
             key={tab.id}
             onClick={() => onChange(tab.id)}
-            className={`relative px-4 py-2.5 text-small font-medium transition-colors cursor-pointer
-              ${isActive ? "text-text-primary" : "text-text-tertiary hover:text-text-secondary"}`}
+            className={`relative px-4 py-2.5 text-small font-medium transition-colors cursor-pointer rounded-t-[--radius-sm]
+              ${isActive ? "text-text-primary bg-accent-muted/40" : "text-text-tertiary hover:text-text-secondary hover:bg-bg-panel-hover/40"}`}
           >
             {tab.label}
             {tab.count !== undefined && tab.count > 0 && (

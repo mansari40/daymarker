@@ -19,6 +19,12 @@ const EMPTY_STATES: Record<
     icon: <Clock size={24} className="text-text-tertiary" />,
     showAdd: true,
   },
+  missed: {
+    heading: "Nothing missed.",
+    body: "You're on top of things. No tasks have slipped through.",
+    icon: <Clock size={24} className="text-text-tertiary" />,
+    showAdd: false,
+  },
   completed: {
     heading: "Nothing completed yet.",
     body: "Check off a task to see it appear here.",
