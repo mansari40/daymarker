@@ -41,14 +41,15 @@ interface AddTaskModalProps {
     timeOfDay: string;
     dueDate: string | null;
   };
+  defaultDueDate?: string;
 }
 
-export function AddTaskModal({ open, onClose, onCreated, editTask }: AddTaskModalProps) {
+export function AddTaskModal({ open, onClose, onCreated, editTask, defaultDueDate }: AddTaskModalProps) {
   const [title, setTitle] = useState(editTask?.title || "");
   const [category, setCategory] = useState(editTask?.category || "OTHER");
   const [weight, setWeight] = useState(editTask?.weight || "STEADY");
   const [timeOfDay, setTimeOfDay] = useState(editTask?.timeOfDay || "ANYTIME");
-  const [dueDate, setDueDate] = useState(editTask?.dueDate || new Date().toISOString().split("T")[0]);
+  const [dueDate, setDueDate] = useState(editTask?.dueDate || defaultDueDate || new Date().toISOString().split("T")[0]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string>();
 
@@ -87,7 +88,7 @@ export function AddTaskModal({ open, onClose, onCreated, editTask }: AddTaskModa
       setCategory("OTHER");
       setWeight("STEADY");
       setTimeOfDay("ANYTIME");
-      setDueDate(new Date().toISOString().split("T")[0]);
+      setDueDate(defaultDueDate || new Date().toISOString().split("T")[0]);
       onClose();
       onCreated();
     } catch {

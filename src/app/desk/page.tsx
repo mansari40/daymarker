@@ -14,6 +14,8 @@ import { TaskDetail } from "@/components/desk/TaskDetail";
 import { SkeletonTask, SkeletonGreeting, SkeletonStats } from "@/components/desk/SkeletonTask";
 import { Tabs } from "@/components/ui/Tabs";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
+import { CalendarView } from "@/components/desk/CalendarView";
+import { AccountView } from "@/components/desk/AccountView";
 
 interface Task {
   id: string;
@@ -40,6 +42,7 @@ export default function DeskPage() {
   const [statsRefreshTrigger, setStatsRefreshTrigger] = useState(0);
   const [streak, setStreak] = useState(0);
   const [detailTask, setDetailTask] = useState<Task | null>(null);
+  const [calendarDueDate, setCalendarDueDate] = useState<string | undefined>(undefined);
   const searchRef = useRef<HTMLInputElement>(null);
 
   const bumpStats = useCallback(() => {
@@ -61,7 +64,7 @@ export default function DeskPage() {
   }, [activeTab]);
 
   useEffect(() => {
-    if (status === "authenticated") {
+    if (status === "authenticated" && activeTab !== "calendar" && activeTab !== "account") {
       const doFetch = async () => {
         try {
           const res = await fetch(`/api/tasks?status=${activeTab}`);
@@ -76,6 +79,8 @@ export default function DeskPage() {
         }
       };
       void doFetch();
+    } else {
+      setLoading(false);
     }
   }, [status, activeTab]);
 
@@ -97,6 +102,7 @@ export default function DeskPage() {
       if (e.key === "n" && !isInput && !e.metaKey && !e.ctrlKey) {
         e.preventDefault();
         setEditingTask(null);
+        setCalendarDueDate(undefined);
         setShowAddModal(true);
       }
 
@@ -126,6 +132,13 @@ export default function DeskPage() {
 
   const handleAddTask = useCallback(() => {
     setEditingTask(null);
+    setCalendarDueDate(undefined);
+    setShowAddModal(true);
+  }, []);
+
+  const handleCalendarAddTask = useCallback((dueDate?: string) => {
+    setEditingTask(null);
+    setCalendarDueDate(dueDate);
     setShowAddModal(true);
   }, []);
 
@@ -174,6 +187,8 @@ export default function DeskPage() {
     { id: "upcoming", label: "Upcoming" },
     { id: "completed", label: "Completed" },
     { id: "archive", label: "Archive" },
+    { id: "calendar", label: "Calendar" },
+    { id: "account", label: "My Account" },
   ];
 
   if (status === "loading" || !session) {
@@ -213,33 +228,35 @@ export default function DeskPage() {
         {/* Greeting */}
         {loading ? <SkeletonGreeting /> : <Greeting onAddTask={handleAddTask} />}
 
-        {/* List panel header */}
-        <div className="mt-12 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <span className="text-label font-semibold uppercase tracking-widest text-accent-400">
-              Your list
-            </span>
-            <h2 className="mt-1 text-h2 font-bold text-text-primary">
-              The next right things.
-            </h2>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="relative">
-              <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-text-tertiary" />
-              <input
-                ref={searchRef}
-                type="text"
-                placeholder="Find a task (press /)"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="h-9 w-48 rounded-[--radius-md] bg-bg-input pl-9 pr-3 text-small text-text-primary border border-border-subtle placeholder:text-text-tertiary focus:outline-none focus:border-border-accent focus:ring-1 focus:ring-border-accent transition-colors"
-              />
+        {/* List panel header — hidden for calendar & account */}
+        {activeTab !== "calendar" && activeTab !== "account" && (
+          <div className="mt-12 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <span className="text-label font-semibold uppercase tracking-widest text-accent-400">
+                Your list
+              </span>
+              <h2 className="mt-1 text-h2 font-bold text-text-primary">
+                The next right things.
+              </h2>
             </div>
-            <button className="flex h-9 w-9 items-center justify-center rounded-[--radius-md] border border-border-subtle text-text-tertiary hover:text-text-primary transition-colors cursor-pointer">
-              <ArrowUpDown size={14} />
-            </button>
+            <div className="flex items-center gap-2">
+              <div className="relative">
+                <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-text-tertiary" />
+                <input
+                  ref={searchRef}
+                  type="text"
+                  placeholder="Find a task (press /)"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="h-9 w-48 rounded-[--radius-md] bg-bg-input pl-9 pr-3 text-small text-text-primary border border-border-subtle placeholder:text-text-tertiary focus:outline-none focus:border-border-accent focus:ring-1 focus:ring-border-accent transition-colors"
+                />
+              </div>
+              <button className="flex h-9 w-9 items-center justify-center rounded-[--radius-md] border border-border-subtle text-text-tertiary hover:text-text-primary transition-colors cursor-pointer">
+                <ArrowUpDown size={14} />
+              </button>
+            </div>
           </div>
-        </div>
+        )}
 
         {/* Tabs */}
         <div className="mt-6">
@@ -248,7 +265,11 @@ export default function DeskPage() {
 
         {/* Content area */}
         <div className="mt-6">
-          {loading ? (
+          {activeTab === "calendar" ? (
+            <CalendarView onAddTask={handleCalendarAddTask} />
+          ) : activeTab === "account" ? (
+            <AccountView />
+          ) : loading ? (
             <div className="flex flex-col gap-3">
               {[1, 2, 3, 4].map((i) => (
                 <SkeletonTask key={i} />
@@ -270,10 +291,12 @@ export default function DeskPage() {
           )}
         </div>
 
-        {/* Stats footer */}
-        <div className="mt-12">
-          <StatsRow refreshTrigger={statsRefreshTrigger} />
-        </div>
+        {/* Stats footer — hidden for calendar & account */}
+        {activeTab !== "calendar" && activeTab !== "account" && (
+          <div className="mt-12">
+            <StatsRow refreshTrigger={statsRefreshTrigger} />
+          </div>
+        )}
       </div>
 
       {/* Bottom banner */}
@@ -285,12 +308,14 @@ export default function DeskPage() {
         onClose={() => {
           setShowAddModal(false);
           setEditingTask(null);
+          setCalendarDueDate(undefined);
         }}
         onCreated={() => {
           fetchTasks();
           bumpStats();
         }}
         editTask={editingTask || undefined}
+        defaultDueDate={calendarDueDate}
       />
 
       {/* Task Detail Slide-Out */}
